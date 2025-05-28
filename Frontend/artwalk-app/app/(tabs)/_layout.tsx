@@ -1,25 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
+import { StyleSheet } from 'react-native';
 
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#F6F69C",
-        tabBarInactiveTintColor: "#3A522D",
-        tabBarStyle: {
-          backgroundColor: "#9FB490",
-          borderTopWidth: 1,
-          borderTopColor: "#3A522D",
-        },
-        headerStyle: {
-          backgroundColor: "#9FB490",
-          borderBottomWidth: 1,
-          borderBottomColor: "#3A522D",
-        },
+        tabBarStyle: style.tabBarStyle,
+        tabBarActiveTintColor: style.tabBarActiveTintColor.color,
+        tabBarInactiveTintColor: style.tabBarInactiveTintColor.color,
+        headerStyle: style.headerStyle,
+        headerTitleStyle: style.headerTitleStyle,
       }}
+      
     >
       <Tabs.Screen
         name="index"
@@ -28,12 +23,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons name="home" color={color} size={24} />
           ),
+          
         }}
       />
       <Tabs.Screen
-        name="camera"
+        name="scanner"
         options={{
-          title: "Camera",
+          title: "Image Classefier",
           tabBarIcon: ({ color }) => (
             <Ionicons name="camera" color={color} size={24} />
           ),
@@ -42,7 +38,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="saved"
         options={{
-          title: "Saves",
+          title: "My Saves",
           tabBarIcon: ({ color }) => (
             <Ionicons name="bookmark" color={color} size={24} />
           ),
@@ -51,3 +47,26 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+export const style = StyleSheet.create({
+  headerStyle: {
+    elevation: 0,
+    shadowOpacity: 0,
+    backgroundColor: '#FFFEFC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1D0C02',
+  },
+  headerTitleStyle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1D0C02',
+  },
+  tabBarStyle: {
+    backgroundColor: '#FFFEFC',
+    borderTopWidth: 1,
+    borderTopColor: '#1D0C02',
+  },
+  tabBarActiveTintColor: {color: '#F95636'},
+  tabBarInactiveTintColor: {color: '#1D0C02',},
+});
+
