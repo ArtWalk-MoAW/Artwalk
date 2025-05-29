@@ -1,0 +1,21 @@
+# Abhängigkeiten
+node_modules/
+
+# Build-Ausgaben
+dist/
+build/
+
+# Umgebungsdateien
+.env
+.env.local
+.env.*.local
+
+# Logfiles
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sonstiges
+.DS_Store
+.idea/
+.vscode/
