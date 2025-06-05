@@ -1,11 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+
 from pydantic import BaseModel
+import os
+import shutil
+
+print("✅ MAIN.PY WIRD AUSGEFÜHRT")
+
 
 app = FastAPI(title="ArtWalk Mini API")
 
 @app.get("/artwalk/ping", tags=["Test"])
 def ping():
     return {"message": "ArtWalk Agent is alive!"}
+
+@app.post("/upload")
+async def upload_image(image: UploadFile = File(...)):
+    os.makedirs("uploads", exist_ok=True)
+    with open(f"uploads/{image.filename}", "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+    return JSONResponse(content={"message": "Image received"}, status_code=200)
 
 
 class CommandRequest(BaseModel):

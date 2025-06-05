@@ -35,7 +35,35 @@ export default function App() {
   }
 
   const  discardImage = () => setCapturedImage(null);
-  const keepImage= () => {
+  const keepImage = async () => {
+    if (!capturedImage) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: capturedImage,
+        name : 'photo.jpg',
+        type: 'image/jpeg',
+      }as any);
+
+      const response = await fetch('http://10.181.240.194:8080/upload',{
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.ok) {
+        console.log("Bild erfolgreich hochgeladen");
+      } else {
+        console.error("1. Fehler beim Hochladen des Bildes:", response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error("2. Fehler beim Hochladen des Bildes:", error);
+    }finally {
+      setCapturedImage(null);
+    }
     console.log("Bild behalten:", capturedImage);
     setCapturedImage(null);
   }
