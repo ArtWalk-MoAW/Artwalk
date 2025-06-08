@@ -4,12 +4,13 @@ import MapView from 'react-native-maps';
 import useUserLocation from '../hooks/useLiveLocation';
 import data from '../assets/Month-2025-06.json';
 import LocationMarker from './LocationMarker';
+import LocationBottomSheet, { LocationBottomSheetRef } from './LocationBottomSheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function MapScreen() {
   const { location } = useUserLocation();
   const mapRef = useRef<MapView>(null);
-
-
+  const bottomSheetRef = useRef<LocationBottomSheetRef | null>(null);
   const [initialCentered, setInitialCentered] = useState(false);
 
   useEffect(() => {
@@ -20,19 +21,20 @@ export default function MapScreen() {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
-
-      setInitialCentered(true); 
+      setInitialCentered(true);
     }
   }, [location, initialCentered]);
 
+  const cleanHtml = (html: string) =>
+    html.replace(/<[^>]*>/g, '').trim();
+
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        
+        showsUserLocation
+        showsMyLocationButton
       >
         {data.map((item) => (
           <LocationMarker
@@ -42,12 +44,14 @@ export default function MapScreen() {
             latitude={parseFloat(item.latitude)}
             longitude={parseFloat(item.longitude)}
             address={item.address}
-            
+            description={cleanHtml(item.description || '')}
+            image={item.image}
+            bottomSheetRef={bottomSheetRef}
           />
         ))}
       </MapView>
-      
-    </View>
+      <LocationBottomSheet ref={bottomSheetRef} />
+    </GestureHandlerRootView>
   );
 }
 
