@@ -1,6 +1,9 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import useUserLocation from '../../hooks/useUserLocation';
+import { View, Text,StyleSheet } from 'react-native';
+import useUserLocation from '../../hooks/useLiveLocation';
+import MapScreen from '@/components/Mapcompnent';
+
+
 
 export default function LocationDebugScreen() {
   const { location, errorMsg } = useUserLocation();
@@ -14,9 +17,20 @@ export default function LocationDebugScreen() {
   }
 
   return (
-    <View>
+     <View style={styles.container}>
       <Text>Latitude: {location.coords.latitude}</Text>
       <Text>Longitude: {location.coords.longitude}</Text>
+      <MapScreen/>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+});
