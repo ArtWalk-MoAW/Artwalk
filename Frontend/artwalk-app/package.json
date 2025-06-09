@@ -13,6 +13,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo-google-fonts/instrument-sans": "^0.4.1",
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.6",
     "@react-navigation/native": "^7.1.6",
@@ -22,7 +23,7 @@
     "expo-linking": "~7.1.5",
     "expo-location": "~18.1.5",
     "expo-router": "~5.0.6",
-    "expo-splash-screen": "~0.30.8",
+    "expo-splash-screen": "~0.30.9",
     "expo-status-bar": "~2.2.3",
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
@@ -34,6 +35,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
+    "react-native-toast-message": "^2.3.0",
     "react-native-web": "~0.20.0"
   },
   "devDependencies": {

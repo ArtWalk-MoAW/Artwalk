@@ -61,15 +61,22 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 22,
+    fontSize: 35,
     marginBottom: 10,
+    fontFamily: "InstrumentSerif-Regular",
   },
   label: {
     marginTop: 10,
-    fontWeight: '600',
+    marginBottom: 5,
+    fontWeight: 'bold',
+    fontFamily: 'InstrumentSans-Bold',
+     fontSize: 15,
   },
   text: {
     marginBottom: 8,
+    fontFamily: "InstrumentSans",
+    fontSize: 15,
+    color: '#444',
   },
   image: {
     width: '100%',

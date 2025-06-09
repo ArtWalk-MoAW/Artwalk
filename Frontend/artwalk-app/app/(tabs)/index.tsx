@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text,StyleSheet } from 'react-native';
 import useUserLocation from '../../hooks/useLiveLocation';
 import MapScreen from '@/components/Mapcompnent';
+import Toast from 'react-native-toast-message';
+
 
 
 
@@ -18,8 +20,7 @@ export default function LocationDebugScreen() {
 
   return (
      <View style={styles.container}>
-      <Text>Latitude: {location.coords.latitude}</Text>
-      <Text>Longitude: {location.coords.longitude}</Text>
+      
       <MapScreen/>
     </View>
   );

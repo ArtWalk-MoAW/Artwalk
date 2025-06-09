@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 
 export default function TabsLayout() {
@@ -55,16 +56,19 @@ export const style = StyleSheet.create({
     backgroundColor: '#FFFEFC',
     borderBottomWidth: 1,
     borderBottomColor: '#1D0C02',
+    fontFamily: 'InstrumentSans',
   },
   headerTitleStyle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1D0C02',
+    fontFamily: 'InstrumentSans',
   },
   tabBarStyle: {
     backgroundColor: '#FFFEFC',
     borderTopWidth: 1,
     borderTopColor: '#1D0C02',
+    fontFamily: 'InstrumentSans',
   },
   tabBarActiveTintColor: {color: '#F95636'},
   tabBarInactiveTintColor: {color: '#1D0C02',},
