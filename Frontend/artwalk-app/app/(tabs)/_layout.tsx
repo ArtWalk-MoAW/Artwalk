@@ -68,7 +68,7 @@ export const style = StyleSheet.create({
     backgroundColor: '#FFFEFC',
     borderTopWidth: 1,
     borderTopColor: '#1D0C02',
-    
+   
   },
   tabBarActiveTintColor: {color: '#F95636'},
   tabBarInactiveTintColor: {color: '#1D0C02',},
