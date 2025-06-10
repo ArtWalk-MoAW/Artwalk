@@ -16,7 +16,7 @@ refine_description:
     Add artistic, historical, or stylistic insights where appropriate.
     Do not use external tools — rely only on the initial visual analysis and your expertise.
   expected_output: >
-    A markdown-formatted report about the artwork, its context, and interpretation.
+    A markdown-formatted report about the artworks name and artist as well as its context, and interpretation.
     Structure it into clearly titled sections and include all relevant information derived from the analysis.
     Do not use code block formatting (no ```).
   agent: refiner_agent

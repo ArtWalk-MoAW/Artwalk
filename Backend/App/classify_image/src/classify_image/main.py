@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import warnings
-
+import os
 from datetime import datetime
 
 from classify_image.crew import ClassifyImage
@@ -74,10 +74,10 @@ def test():
 
 def run_crew_on_image(image_path: str):
     """
-    Run the crew on a specific image.
+    Run the crew on a specific image and save the output to a markdown file.
     """
     try:
-        # 1. Initialisiere das Tool (keine Argumente im Konstruktor!)
+        # 1. Initialisiere das Tool
         llava_tool = LLavaTool()
 
         # 2. Bild analysieren lassen
@@ -88,15 +88,31 @@ def run_crew_on_image(image_path: str):
         )
         print("✅ Bildbeschreibung:", image_description)
 
-        # 3. Crew mit generierter Beschreibung starten
+        # 3. Inputs vorbereiten
         inputs = {
             "image_description": image_description,
             "topic": "Public Artworks",
             "current_year": str(datetime.now().year)
         }
 
-        ClassifyImage().crew().kickoff(inputs=inputs)
+        # 4. Crew instanziieren und starten
+        crew_instance = ClassifyImage()
+        crew = crew_instance.crew()
+        crew.kickoff(inputs=inputs)
+
+        # 5. Ausgabe des Refinement Tasks abrufen
+        refine_task = crew_instance.refine_description()
+        result_text = refine_task.output.raw
+
+        # 6. Speichern in Datei
+        os.makedirs("output", exist_ok=True)
+        filename = f"output/report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        with open(filename, "w") as f:
+            f.write(result_text)
+
+        print(f"✅ Bericht gespeichert unter: {filename}")
 
     except Exception as e:
         traceback.print_exc()
         raise Exception(f"An error occurred while running the crew on the image: {e}")
+    

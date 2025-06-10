@@ -4,13 +4,12 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from crewai import LLM
 import litellm
-from dotenv import load_dotenv
 
 
 from classify_image.tools.llava_tool import LLavaTool
 
 litellm._turn_on_debug()
-load_dotenv()
+
 
 
 llm = LLM(
