@@ -3,6 +3,8 @@ import { useRef,useState } from 'react';
 import React from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View ,Image} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { ActivityIndicator } from 'react-native';
+
 import * as FileSystem from 'expo-file-system';
 
 
@@ -12,6 +14,7 @@ export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const cameraRef = useRef<any>(null);
 
   if (!permission) {
@@ -43,7 +46,8 @@ export default function App() {
     if (!capturedImage) return;
 
     try {
-      // Prüfe, ob die Datei existiert
+      setIsAnalyzing(true); // Ladeanzeige AN
+
       const fileInfo = await FileSystem.getInfoAsync(capturedImage);
       if (!fileInfo.exists) {
         console.error("📛 Bild existiert nicht:", capturedImage);
@@ -74,8 +78,10 @@ export default function App() {
       console.error("2. Fehler beim Hochladen des Bildes:", error);
     } finally {
       setCapturedImage(null);
+      setIsAnalyzing(false); // Ladeanzeige AUS
     }
   };
+
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
@@ -83,19 +89,27 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {capturedImage ? (
+      {isAnalyzing ? (
+        // Ladeanzeige aktiv
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ marginBottom: 20, fontSize: 18 }}>Analyzing image...</Text>
+          <ActivityIndicator size="large" color="#DB4F00" />
+        </View>
+      ) : capturedImage ? (
+        // Bildvorschau & Buttons
         <View style={styles.previewContainer}>
           <Image source={{ uri: capturedImage }} style={styles.preview} />
           <View style={styles.buttonRow}>
             <TouchableOpacity onPress={discardImage} style={styles.button}>
-                <Text style={styles.actionButtonText}>Take again</Text>
+              <Text style={styles.actionButtonText}>Take again</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={keepImage} style={styles.button}>
-                <Text style={styles.actionButtonText} >Start analyzing</Text>
+              <Text style={styles.actionButtonText}>Start analyzing</Text>
             </TouchableOpacity>
           </View>
         </View>
       ) : (
+        // Kameraansicht
         <>
           <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
           <View style={styles.buttonContainer}>
@@ -115,6 +129,7 @@ export default function App() {
       )}
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
