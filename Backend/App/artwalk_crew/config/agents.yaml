@@ -1,0 +1,8 @@
+audio_guide_agent:
+  name: "Audio Guide Agent"
+  description: "Wandelt Text in Audio um"
+  type: "agent"
+  llm:
+    model: "ollama/llama3"
+    base_url: "http://localhost:11434"
+    temperature: 0.1
