@@ -2,10 +2,18 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="ArtWalk Mini API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Exhibition(BaseModel):
@@ -21,7 +29,7 @@ class Exhibition(BaseModel):
 
 
 def load_exhibitions():
-    with open("../data/Month-2025-06.json", "r", encoding="utf-8") as f:
+    with open("../data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     return [
@@ -63,6 +71,6 @@ def run_command(request: CommandRequest):
 
 @app.get("/get-exhibitions")
 def get_exhibitions():
-    with open("../data/Month-2025-06.json", "r", encoding="utf-8") as f:
+    with open("../data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
