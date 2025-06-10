@@ -3,6 +3,10 @@ import { useRef,useState } from 'react';
 import React from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View ,Image} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
+
+
+
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -39,14 +43,21 @@ export default function App() {
     if (!capturedImage) return;
 
     try {
+      // Prüfe, ob die Datei existiert
+      const fileInfo = await FileSystem.getInfoAsync(capturedImage);
+      if (!fileInfo.exists) {
+        console.error("📛 Bild existiert nicht:", capturedImage);
+        return;
+      }
+
       const formData = new FormData();
       formData.append('image', {
         uri: capturedImage,
-        name : 'photo.jpg',
+        name: 'photo.jpg',
         type: 'image/jpeg',
-      }as any);
+      } as any);
 
-      const response = await fetch('http://10.181.240.194:8080/upload',{
+      const response = await fetch('http://192.168.41.81:8080/upload', {
         method: 'POST',
         body: formData,
         headers: {
@@ -55,18 +66,16 @@ export default function App() {
       });
 
       if (response.ok) {
-        console.log("Bild erfolgreich hochgeladen");
+        console.log("✅ Bild erfolgreich hochgeladen");
       } else {
         console.error("1. Fehler beim Hochladen des Bildes:", response.status, response.statusText);
       }
     } catch (error) {
       console.error("2. Fehler beim Hochladen des Bildes:", error);
-    }finally {
+    } finally {
       setCapturedImage(null);
     }
-    console.log("Bild behalten:", capturedImage);
-    setCapturedImage(null);
-  }
+  };
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));

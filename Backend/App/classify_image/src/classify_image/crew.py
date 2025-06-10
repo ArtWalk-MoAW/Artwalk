@@ -4,18 +4,19 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from crewai import LLM
 import litellm
+from dotenv import load_dotenv
 
-from crewai_tools import SerperDevTool
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+
+from classify_image.tools.llava_tool import LLavaTool
+
 litellm._turn_on_debug()
+load_dotenv()
 
 
 llm = LLM(
-    model = "ollama/llama3",
-    base_url = "http://localhost:11434",
-    temperature= 0.1,
+    model = "ollama/llava",
+    base_url = "http://host.docker.internal:11434",
+    temperature= 0.2,
 )
 
 
@@ -28,55 +29,50 @@ class ClassifyImage():
     agents_config= "./config/agents.yaml"
     tasks_config= "./config/tasks.yaml"
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
-    
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
+  
     @agent
-    def researcher(self) -> Agent:
+    def visual_analyzer(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['visual_analyzer'], # type: ignore[index]
             verbose=True,
+            #tools=[LLavaTool()],
             llm=llm
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def refiner_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['refiner_agent'], # type: ignore[index]
             verbose=True,
-            #tools=[SerperDevTool()],
-            llm=llm
+            #tools=[LLavaTool()],
+            llm=llm,
+            #output_file='../report.md' # Specify the output file for the agent's results
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
+
+    #Analyzes the image and trys to give back the artist and the title of the artwork
     @task
-    def research_task(self) -> Task:
+    def analyze_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config['analyze_image'], # type: ignore[index]
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def refine_description(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
+            config=self.tasks_config['refine_description'], # type: ignore[index]
             output_file='report.md'
         )
 
     @crew
     def crew(self) -> Crew:
         """Creates the ClassifyImage crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
+       
 
         return Crew(
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
+

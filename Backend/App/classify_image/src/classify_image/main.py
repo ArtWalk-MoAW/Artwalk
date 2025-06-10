@@ -7,6 +7,8 @@ from datetime import datetime
 from classify_image.crew import ClassifyImage
 import traceback
 
+from classify_image.tools.llava_tool import LLavaTool
+
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 # This main file is intended to be a way for you to run your
@@ -19,7 +21,7 @@ def run():
     Run the crew.
     """
     inputs = {
-        'topic': 'Art',
+        'topic': 'Public Artworks',
         'current_year': str(datetime.now().year)
     }
     
@@ -68,3 +70,33 @@ def test():
 
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")
+
+
+def run_crew_on_image(image_path: str):
+    """
+    Run the crew on a specific image.
+    """
+    try:
+        # 1. Initialisiere das Tool (keine Argumente im Konstruktor!)
+        llava_tool = LLavaTool()
+
+        # 2. Bild analysieren lassen
+        print(f"🖼 Analysiere Bild: {image_path}")
+        image_description = llava_tool.run(
+            image_path=image_path,
+            base_url="http://host.docker.internal:11434"
+        )
+        print("✅ Bildbeschreibung:", image_description)
+
+        # 3. Crew mit generierter Beschreibung starten
+        inputs = {
+            "image_description": image_description,
+            "topic": "Public Artworks",
+            "current_year": str(datetime.now().year)
+        }
+
+        ClassifyImage().crew().kickoff(inputs=inputs)
+
+    except Exception as e:
+        traceback.print_exc()
+        raise Exception(f"An error occurred while running the crew on the image: {e}")

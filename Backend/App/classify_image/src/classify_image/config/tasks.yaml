@@ -1,17 +1,24 @@
-research_task:
+analyze_image:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Analyze the uploaded image at {image_description} and generate an initial description of the artwork.
+    Try to identify the artist and the name of the artwork using your expertise in {topic}.
+    If you can't identify the artist or artwork, provide a detailed description of the visual elements instead.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A detailed description of the artwork, including any known information about the artist and the artwork.
+    If unknown, provide the most accurate visual description possible.
+  agent: visual_analyzer
+  input:
+    image_path: "{image_description}"
 
-reporting_task:
+refine_description:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Refine and expand on the initial image description using your knowledge of {topic}.
+    Add artistic, historical, or stylistic insights where appropriate.
+    Do not use external tools — rely only on the initial visual analysis and your expertise.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A markdown-formatted report about the artwork, its context, and interpretation.
+    Structure it into clearly titled sections and include all relevant information derived from the analysis.
+    Do not use code block formatting (no ```).
+  agent: refiner_agent
+  markdown: true
+  output_file: report.md 
