@@ -1,0 +1,27 @@
+analyze_image:
+  description: >
+    Analyze the uploaded image at {image_description} and generate an initial description of the artwork.
+    Try to identify the artist and the name of the artwork using your expertise in {topic}.
+    If you can't identify the artist or artwork, provide a detailed description of the visual elements instead.
+  expected_output: >
+    A detailed description of the artwork, including any known information about the artist and the artwork.
+    If unknown, provide the most accurate visual description possible.
+  agent: visual_analyzer
+  input:
+    image_path: "{image_description}"
+
+refine_description:
+  description: >
+    Refine and structure the initial image description using your knowledge of {topic}.
+    Return the output strictly as a JSON object without any code block formatting or markdown.
+    Only output:
+    {
+        "artist": "...",
+        "artwork": "...",
+        "description": "..."
+    }
+    Do not include ```json or any other markdown symbols.
+  expected_output: >
+    A JSON object containing fields for artist, artwork, and description, strictly following the format specified above.
+  agent: refiner_agent
+  output_file: refined_output.json
