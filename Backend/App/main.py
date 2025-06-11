@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
-from classify_image.main import run_crew_on_image
+from classify_image.src.classify_image.main import run_crew_on_image
+from detail_agent.src.detail_agent.main import run_detail_page
+
 
 from pydantic import BaseModel
 from typing import List, Optional
@@ -62,10 +64,22 @@ def ping():
 async def upload_image(image: UploadFile = File(...)):
     os.makedirs("uploads", exist_ok=True)
     file_path = f"uploads/{image.filename}"
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    result = run_crew_on_image(file_path)
+    #1. Step: Run image Classifier crew
+    result_json = run_crew_on_image(file_path)
+
+    #2. Step: Run Detail Agent crew
+    run_detail_page(
+        artist=result_json["artist"],
+        artwork=result_json["artwork"],
+        description=result_json["description"]
+    )
+
+
+    
 
     
     return JSONResponse(content={"message": "Image received"}, status_code=200)

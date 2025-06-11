@@ -6,8 +6,6 @@ from crewai import LLM
 import litellm
 
 
-from classify_image.tools.llava_tool import LLavaTool
-
 litellm._turn_on_debug()
 
 

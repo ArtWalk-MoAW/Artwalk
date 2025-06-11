@@ -5,10 +5,10 @@ import os
 import json
 from datetime import datetime
 
-from classify_image.crew import ClassifyImage
+from classify_image.src.classify_image.crew import ClassifyImage
 import traceback
 
-from classify_image.tools.llava_tool import LLavaTool
+from classify_image.src.classify_image.tools.llava_tool import LLavaTool
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -128,6 +128,8 @@ def run_crew_on_image(image_path: str):
             json.dump(result_json, f, ensure_ascii=False, indent=4)
 
         print(f"✅ Bericht gespeichert unter: {filename}")
+
+        return result_json
 
     except Exception as e:
         traceback.print_exc()
