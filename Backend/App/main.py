@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 from classify_image.main import run_crew_on_image
 
 from pydantic import BaseModel
+from typing import List, Optional
+import json
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
 
@@ -10,6 +13,46 @@ print("✅ MAIN.PY WIRD AUSGEFÜHRT")
 
 
 app = FastAPI(title="ArtWalk Mini API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class Exhibition(BaseModel):
+    id: str
+    title: str
+    artist: str
+    latitude: float
+    longitude: float
+    address: str
+    description: Optional[str] = ""
+    image: Optional[str] = ""
+    opening_hours: Optional[str] = "immer zugänglich"
+
+
+def load_exhibitions():
+    with open("../data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return [
+        Exhibition(
+            id=item["id"],
+            title=item.get("title", ""),
+            artist=item.get("artist1_title", "Unbekannt"),
+            latitude=float(item["latitude"]),
+            longitude=float(item["longitude"]),
+            address=item.get("address", ""),
+            description="",
+            image="https://streetartcities.com/images/" + item["id"] + ".jpg",
+            opening_hours="jederzeit zugänglich"
+        )
+        for item in data
+    ]
 
 @app.get("/artwalk/ping", tags=["Test"])
 def ping():
@@ -41,3 +84,12 @@ def run_command(request: CommandRequest):
         return {"message": "Simulated ArtWalk execution started."}
     else:
         return {"message": f"Unknown command: {command}!"}
+
+
+
+
+@app.get("/get-exhibitions")
+def get_exhibitions():
+    with open("../data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
