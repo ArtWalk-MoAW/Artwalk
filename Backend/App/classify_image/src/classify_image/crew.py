@@ -60,7 +60,7 @@ class ClassifyImage():
     def refine_description(self) -> Task:
         return Task(
             config=self.tasks_config['refine_description'], # type: ignore[index]
-            output_file='report.md'
+            output_file='refined_output.json'
         )
 
     @crew

@@ -2,6 +2,7 @@
 import sys
 import warnings
 import os
+import json
 from datetime import datetime
 
 from classify_image.crew import ClassifyImage
@@ -11,10 +12,18 @@ from classify_image.tools.llava_tool import LLavaTool
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-# This main file is intended to be a way for you to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+import re
+
+def extract_json_from_response(raw_text):
+    """
+    Entfernt evtl. Markdown-Formatierungen und extrahiert das reine JSON.
+    """
+    # Entferne ```json und ```
+    cleaned_text = re.sub(r"```json\s*", "", raw_text)
+    cleaned_text = re.sub(r"```", "", cleaned_text)
+    cleaned_text = cleaned_text.strip()
+
+    return cleaned_text
 
 def run():
     """
@@ -74,7 +83,7 @@ def test():
 
 def run_crew_on_image(image_path: str):
     """
-    Run the crew on a specific image and save the output to a markdown file.
+    Run the crew on a specific image and save the output to a JSON file.
     """
     try:
         # 1. Initialisiere das Tool
@@ -104,15 +113,22 @@ def run_crew_on_image(image_path: str):
         refine_task = crew_instance.refine_description()
         result_text = refine_task.output.raw
 
-        # 6. Speichern in Datei
+        # 6. JSON validieren und speichern
+        try:
+            cleaned_text = extract_json_from_response(result_text)
+            result_json = json.loads(cleaned_text)
+        except json.JSONDecodeError as e:
+            print("⚠ Fehler beim Parsen des JSON-Outputs:", e)
+            print("⚠ Raw Output:", result_text)
+            raise e
+
         os.makedirs("output", exist_ok=True)
-        filename = f"output/report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-        with open(filename, "w") as f:
-            f.write(result_text)
+        filename = f"output/report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(result_json, f, ensure_ascii=False, indent=4)
 
         print(f"✅ Bericht gespeichert unter: {filename}")
 
     except Exception as e:
         traceback.print_exc()
         raise Exception(f"An error occurred while running the crew on the image: {e}")
-    
