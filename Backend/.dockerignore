@@ -7,6 +7,7 @@ node_modules
 
 # Python
 App/classify_image/.venv
+App/detail_agent/.venv
 __pycache__/
 *.py[cod]
 *.sqlite3

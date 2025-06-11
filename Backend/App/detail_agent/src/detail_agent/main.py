@@ -4,7 +4,7 @@ import warnings
 
 from datetime import datetime
 
-from detail_agent.crew import DetailAgent
+from .crew import DetailAgent
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -13,14 +13,14 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 
-def run():
+def run_detail_page(artist: str, artwork: str, description: str):
     """
     Run the crew.
     """
     inputs = {
-        "artist": "Gustav Klimt",
-        "artwork": "The Kiss",
-        "description": "The Kiss by Gustav Klimt is a gold-adorned painting of a couple embracing, symbolizing love, intimacy, and unity"
+        "artist": artist,
+        "artwork": artwork,
+        "description": description
     }
     
     try:
