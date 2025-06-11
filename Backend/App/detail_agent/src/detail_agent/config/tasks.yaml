@@ -1,0 +1,90 @@
+artist_task:
+  description: >
+    Research the artist "{{artist}}" and their artwork "{{artwork}}".
+    Provide a short biography, general artistic style, and key themes in their work.
+  expected_output: >
+    - Short artist bio
+    - Artistic style
+    - Notable themes or ideas in the artwork
+  agent: art_researcher
+
+image_task:
+  description: >
+   Using the following description of the artwork "{{artwork}}" by "{{artist}}", analyze the visual elements and provide an interpretation.
+    Description: "{{description}}"
+  expected_output: >
+    - Visual description
+    - Emotional or symbolic interpretation
+  agent: image_analyst
+
+era_task:
+  description: >
+   Based on the artist "{{artist}}" and the artwork "{{artwork}}", determine the historical art period.
+    Include timeframe, movement name, and key traits of the era.
+  expected_output: >
+    - Art movement or era
+    - Approximate years
+    - Characteristics of the era
+  agent: era_expert
+
+
+similarity_task:
+  description: >
+   Suggest 3 similar artworks or artists that share stylistic, thematic, or emotional qualities with "{{artwork}}" by "{{artist}}".
+  expected_output: >
+    - List of 3 artworks or artists
+    - Short explanation of similarity
+  agent: similarity_curator
+
+
+reporting_task:
+  description: >
+    Create a detailed, structured JSON report that compiles all findings from the previous tasks.
+    The report should include in-depth and well-formulated content in English across the following main sections:
+    
+    - Artist biography and artistic style:
+      Provide a comprehensive biography of the artist, including relevant historical background, major life events, and their artistic development.
+      Describe the artist's characteristic style, techniques, recurring themes, and unique contributions to the art world.
+
+    - Visual description and interpretation of the artwork:
+      Describe the artwork's key visual features (composition, color, figures, materials, etc.).
+      Include a thoughtful interpretation of the meaning, symbolism, and emotional or intellectual impact of the piece.
+
+    - Historical art movement and key traits:
+      Identify the historical art movement or era the work belongs to, including approximate years.
+      Explain the key traits of that movement and how the artwork reflects or contributes to them.
+
+    - Suggested similar artworks or artists:
+      List at least 2–3 artworks or artists that are stylistically, thematically, or historically related.
+      Include title, artist, year, and optionally a short justification for each.
+
+    Output must be delivered in a clean, readable JSON structure with the following fields:
+    
+    {
+      "artist_info": {
+        "name": "...",
+        "biography": "...",
+        "artistic_style": "..."
+      },
+      "artwork_analysis": {
+        "title": "...",
+        "visual_description": "...",
+        "interpretation": "..."
+      },
+      "historical_context": {
+        "art_movement": "...",
+        "key_traits": "..."
+      },
+      "similar_artworks": [
+        {
+          "title": "...",
+          "artist": "...",
+          "year": "..."
+        }
+      ]
+    }
+
+    All fields must be populated with clear, informative, and precise English-language content.
+  expected_output: JSON
+  agent: reporting_analyst
+  output_format: json
