@@ -1,0 +1,24 @@
+analyze_image:
+  description: >
+    Analyze the uploaded image at {image_description} and generate an initial description of the artwork.
+    Try to identify the artist and the name of the artwork using your expertise in {topic}.
+    If you can't identify the artist or artwork, provide a detailed description of the visual elements instead.
+  expected_output: >
+    A detailed description of the artwork, including any known information about the artist and the artwork.
+    If unknown, provide the most accurate visual description possible.
+  agent: visual_analyzer
+  input:
+    image_path: "{image_description}"
+
+refine_description:
+  description: >
+    Refine and expand on the initial image description using your knowledge of {topic}.
+    Add artistic, historical, or stylistic insights where appropriate.
+    Do not use external tools — rely only on the initial visual analysis and your expertise.
+  expected_output: >
+    A markdown-formatted report about the artworks name and artist as well as its context, and interpretation.
+    Structure it into clearly titled sections and include all relevant information derived from the analysis.
+    Do not use code block formatting (no ```).
+  agent: refiner_agent
+  markdown: true
+  output_file: report.md 

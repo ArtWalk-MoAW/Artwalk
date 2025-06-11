@@ -1,0 +1,4 @@
+{
+  "python.analysis.extraPaths": ["./Backend/App/classify_image"],
+  "git.ignoreLimitWarning": true
+}
