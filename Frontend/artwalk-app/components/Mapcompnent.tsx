@@ -6,6 +6,7 @@ import LocationMarker from './LocationMarker';
 import LocationBottomSheet, { LocationBottomSheetRef } from './LocationBottomSheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useExhibitionData from '../hooks/useExhibitionData';
+import { useSavedLocations } from '../context/SavedLocationsContext';
 
 export default function MapScreen() {
   const { location } = useUserLocation();
@@ -14,6 +15,7 @@ export default function MapScreen() {
   const [initialCentered, setInitialCentered] = useState(false);
   const { data, loading } = useExhibitionData();
   const [markersReady, setMarkersReady] = useState(false);
+  const { addLocation } = useSavedLocations();
 
   useEffect(() => {
     if (location && mapRef.current && !initialCentered) {
@@ -61,7 +63,7 @@ export default function MapScreen() {
       ))}
     </MapView>
 
-      <LocationBottomSheet ref={bottomSheetRef} />
+      <LocationBottomSheet ref={bottomSheetRef}  onSave={(location) => {addLocation(location);}}/>
     </GestureHandlerRootView>
   );
 }

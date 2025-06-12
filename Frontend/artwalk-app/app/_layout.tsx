@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { SavedLocationsProvider } from '../context/SavedLocationsContext';
 
 // SplashScreen anzeigen bis Fonts geladen sind
 SplashScreen.preventAutoHideAsync();
@@ -26,9 +27,11 @@ export default function Layout() {
 
   return (
     <>
+    <SavedLocationsProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
+      </SavedLocationsProvider>
     </>
   );
 }
