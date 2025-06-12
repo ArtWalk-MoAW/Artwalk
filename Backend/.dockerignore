@@ -1,0 +1,31 @@
+# Node.js / React Native / Expo
+node_modules
+.expo
+.expo-shared
+*.log
+*.lock
+
+# Python
+App/classify_image/.venv
+App/detail_agent/.venv
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv
+.env
+*.egg-info/
+
+# System
+.DS_Store
+
+# Build artifacts
+dist/
+build/
+uploads/
+assets/
+*.jpeg
+*.jpg
+*.png
+
+# Git
+.git

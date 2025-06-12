@@ -29,7 +29,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="scanner"
         options={{
-          title: "Image Classefier",
+          title: "Art Scanner",
           tabBarIcon: ({ color }) => (
             <Ionicons name="camera" color={color} size={24} />
           ),
@@ -55,16 +55,19 @@ export const style = StyleSheet.create({
     backgroundColor: '#FFFEFC',
     borderBottomWidth: 1,
     borderBottomColor: '#1D0C02',
+    
   },
   headerTitleStyle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1D0C02',
+    
   },
   tabBarStyle: {
     backgroundColor: '#FFFEFC',
     borderTopWidth: 1,
     borderTopColor: '#1D0C02',
+   
   },
   tabBarActiveTintColor: {color: '#F95636'},
   tabBarInactiveTintColor: {color: '#1D0C02',},
