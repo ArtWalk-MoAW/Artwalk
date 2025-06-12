@@ -14,6 +14,7 @@ RUN poetry install --no-root --no-interaction
 # Copy all application code
 COPY App/ ./App/
 COPY data/ ./data/
+
 # Create upload folder inside the container
 RUN mkdir -p /app/uploads
 

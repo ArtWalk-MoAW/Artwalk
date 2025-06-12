@@ -111,27 +111,36 @@ def get_exhibitions():
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
-#md_path = Path("/app/App/detail_agent/final_art_report.md")
+
+
+import json
+from json import JSONDecodeError
+from fastapi.responses import JSONResponse
+
+def fix_similar_artworks(content: str) -> str:
+    # Repariere die fehlerhafte title-Zeile (z. B. "The Scream" by Edvard Munch (1893))
+    pattern = r'"title":\s*"([^"]+)"\s*by\s*([^"]+)\s*\((\d{4})\)\s*,'
+    replacement = r'"title": "\1", "artist": "\2", "year": "\3",'
+    return re.sub(pattern, replacement, content)
+
 @app.get("/art-report")
 async def get_art_report():
-    md_path = Path("/app/App/detail_agent/final_art_report.md")
+    path = Path("/app/final_art_report.md")
+    if not path.exists():
+        return JSONResponse(content={"error": "File not found"}, status_code=404)
 
-    # Prüfe ob Datei existiert
-    if not md_path.exists():
-        return {"error": f"Report not found at {md_path}"}
+    content = path.read_text(encoding="utf-8")
+    print(content)
 
-    # Dateiinhalt lesen
-    content = md_path.read_text(encoding="utf-8")
-
-    # Versuche JSON-Block zu finden (```json oder ```)
-    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
+    # Optional: Nur JSON-Block extrahieren
+    match = re.search(r'\{.*\}', content, re.DOTALL)
     if not match:
-        return {"error": "No JSON block found in Markdown"}
+        return JSONResponse(content={"error": "No valid JSON found"}, status_code=400)
 
-    json_block = match.group(1).strip()
+    json_text = fix_similar_artworks(match.group())
 
     try:
-        parsed = json.loads(json_block)
-        return parsed  # ← Gibt reines JSON ans Frontend zurück
+        data = json.loads(json_text)
+        return JSONResponse(content=data)
     except json.JSONDecodeError as e:
-        return {"error": f"Invalid JSON format: {e}"}
+        return JSONResponse(content={"error": f"JSON parsing failed: {e}"}, status_code=400)

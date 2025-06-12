@@ -4,10 +4,26 @@ import React from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View ,Image} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+
 
 import * as FileSystem from 'expo-file-system';
 
+const pollForReport = async (maxRetries = 10, delayMs = 2000) => {
+  for (let i = 0; i < maxRetries; i++) {
+    const res = await fetch('http://10.181.201.29:8080/art-report');
+    const json = await res.json();
 
+    if (res.ok && !json.error) {
+      return json;
+    }
+
+    console.log(`⏳ Warte auf Report... (${i + 1}/${maxRetries})`);
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+
+  throw new Error("Report konnte nicht rechtzeitig geladen werden.");
+};
 
 
 export default function App() {
@@ -16,6 +32,8 @@ export default function App() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const cameraRef = useRef<any>(null);
+  const router = useRouter();
+
 
   if (!permission) {
     // Camera permissions are still loading.
