@@ -2,6 +2,9 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
+from pathlib import Path
+import json
+import re
 
 
 from pydantic import BaseModel
@@ -108,3 +111,27 @@ def get_exhibitions():
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+#md_path = Path("/app/App/detail_agent/final_art_report.md")
+@app.get("/art-report")
+async def get_art_report():
+    md_path = Path("/app/App/detail_agent/final_art_report.md")
+
+    # Prüfe ob Datei existiert
+    if not md_path.exists():
+        return {"error": f"Report not found at {md_path}"}
+
+    # Dateiinhalt lesen
+    content = md_path.read_text(encoding="utf-8")
+
+    # Versuche JSON-Block zu finden (```json oder ```)
+    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
+    if not match:
+        return {"error": "No JSON block found in Markdown"}
+
+    json_block = match.group(1).strip()
+
+    try:
+        parsed = json.loads(json_block)
+        return parsed  # ← Gibt reines JSON ans Frontend zurück
+    except json.JSONDecodeError as e:
+        return {"error": f"Invalid JSON format: {e}"}
