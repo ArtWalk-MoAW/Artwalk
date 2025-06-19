@@ -57,11 +57,19 @@ https://streetartcities.com/open-data
 # Start frontend
 cd frontend
 npm install
+
+-> change IP in scanner.tsx and hooks/useExhibitionData.tsx (ipconfig getifaddr en0)
+cd artwalk-app
 npx expo start
 
 # Build backend
+cd backend
 poetry install
+poerty shell
 uv tool install crewai
+
+cd ..
+-> open docker app 
 docker-compose build
 
 # Start backend and TTS Service
