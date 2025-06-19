@@ -1,7 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useRef,useState } from 'react';
-import React from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View ,Image} from 'react-native';
+import { useRef, useState } from 'react';
+import React from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
 
@@ -9,6 +9,7 @@ import * as FileSystem from 'expo-file-system';
 
 
 
+import * as Speech from 'expo-speech';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -33,13 +34,14 @@ export default function App() {
   }
 
   const takePicture = async () => {
-    if (cameraRef.current){
+    if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedImage(photo.uri);
-      console.log(photo.uri)
+      console.log(photo.uri);
     }
+  };
 
-  }
+  const discardImage = () => setCapturedImage(null);
 
   const  discardImage = () => setCapturedImage(null);
   const keepImage = async () => {
@@ -82,9 +84,18 @@ export default function App() {
     }
   };
 
+  const keepImage = () => {
+    console.log('Bild behalten:', capturedImage);
+
+    const dummyDescription =
+      'Sternennacht ist eines der bekanntesten Gemälde von Vincent van Gogh. Es zeigt einen nächtlichen Himmel voller Wirbel und einen ruhigen Ort im Vordergrund.';
+
+    Speech.speak(dummyDescription);
+    setCapturedImage(null);
+  };
 
   function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
   return (
@@ -144,13 +155,12 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
-
   button: {
     backgroundColor: '#DB4F00',
-  paddingVertical: 12,
-  paddingHorizontal: 24,
-  borderRadius: 8,
-  margin: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    margin: 10,
   },
   text: {
     fontSize: 24,
@@ -161,19 +171,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '22%', 
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    justifyContent: 'center', 
-    alignItems: 'center',     
+    height: '22%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 40, 
+    gap: 40,
   },
   flipButton: {
-    
     borderRadius: 20,
     padding: 10,
     alignItems: 'center',
