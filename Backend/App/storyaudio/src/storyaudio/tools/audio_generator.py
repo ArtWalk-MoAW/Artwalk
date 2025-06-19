@@ -1,24 +1,14 @@
 from crewai.tools import BaseTool
-from TTS.api import TTS
-import os
-import uuid
-
-
+import requests
 
 class AudioGeneratorTool(BaseTool):
     name: str = "AudioGenerator"
-    description: str = "Wandelt einen deutschen Text in eine MP3-Datei um."
+    description: str = "Wandelt deutschen Text über externen TTS-Service in MP3 um."
 
     def _run(self, text: str) -> str:
-        output_dir = "static/audio"
-        os.makedirs(output_dir, exist_ok=True)
-
-        filename = f"output_{uuid.uuid4()}.mp3"
-        output_path = os.path.join(output_dir, filename)
-
         try:
-            tts = TTS("tts_models/de/thorsten/tacotron2-DDC", progress_bar=False, gpu=False)
-            tts.tts_to_file(text=text, file_path=output_path)
-            return f"/audio/{filename}"
+            response = requests.post("http://tts:5005/generate", json={"text": text})
+            data = response.json()
+            return data.get("audio_path", "Fehler: Keine Datei generiert")
         except Exception as e:
-            return f"❌ Fehler: {e}"
+            return f"Fehler bei Anfrage: {e}"
