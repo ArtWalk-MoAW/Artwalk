@@ -1,4 +1,4 @@
-from langchain_ollama import OllamaLLM
+from langchain_community.llms.ollama import Ollama
 
 CATEGORIES = [
     "Mural",
@@ -28,7 +28,10 @@ SYSTEM_PROMPT = (
     "Verwende nur diese Begriffe und keine eigenen Erfindungen. Gib sie durch Kommas getrennt aus."
 )
 
-llm = OllamaLLM(model="llama3")
+llm = Ollama(
+    model="llama3",
+    base_url="http://host.docker.internal:11434"
+)
 
 def classify_art_style(description: str, artist: str = "") -> list[str]:
     if not description.strip():

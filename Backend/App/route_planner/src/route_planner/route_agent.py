@@ -1,5 +1,5 @@
 from crewai import Agent
-from agents.classify_art.utils import classify_art_style
+from App.route_planner.classify_art.utils import classify_art_style
 
 class RouteAgent:
     def build(self):

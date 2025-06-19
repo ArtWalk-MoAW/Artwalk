@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
-
+from App.route_planner.src.route_planner.planner_crew import plan_route
 
 from pydantic import BaseModel
 from typing import List, Optional
@@ -24,6 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class RouteRequest(BaseModel):
+    district: str
+    max_minutes: int
+    num_stops: int
+    styles: list[str]
 
 class Exhibition(BaseModel):
     id: str
@@ -108,3 +113,14 @@ def get_exhibitions():
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+
+@app.post("/route")
+def generate_route(request: RouteRequest):
+    result = plan_route(
+        selected_district=request.district,
+        max_minutes=request.max_minutes,
+        num_stops=request.num_stops,
+        with_description_only=True,
+        preferred_styles=request.styles
+    )
+    return {"route": result}

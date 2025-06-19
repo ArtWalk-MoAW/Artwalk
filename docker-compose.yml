@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - tts
+    networks:
+      - artwalk-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  
+
+  tts:
+    build:
+      context: ./tts_service
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    networks:
+      - artwalk-net
+
+networks:
+  artwalk-net:
+    driver: bridge
