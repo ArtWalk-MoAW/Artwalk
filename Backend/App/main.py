@@ -38,7 +38,7 @@ class Exhibition(BaseModel):
 
 
 def load_exhibitions():
-    with open("../data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
+    with open("/app/data/munich_example_with_image_url.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     return [
@@ -104,9 +104,7 @@ def run_command(request: CommandRequest):
 
 @app.get("/get-exhibitions")
 def get_exhibitions():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(dir_path, "data", "munich_example_with_image_url.json")
-
+    file_path = "/app/data/munich_example_with_image_url.json"
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data

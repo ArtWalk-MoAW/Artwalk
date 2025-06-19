@@ -1,0 +1,7 @@
+generate_audio_task:
+  description: >
+    Verwandle den eingegebenen Text in eine Audio-Datei (MP3) und gib den Pfad zur Datei zurück.
+  expected_output: >
+    Pfad zur Audio-Datei im Format /audio/dateiname.mp3
+  input_variables:
+    - text
