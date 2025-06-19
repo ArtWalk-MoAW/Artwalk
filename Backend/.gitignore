@@ -39,4 +39,4 @@ poetry.lock
 # Editor backups
 *.swp
 *.bak
-*.tmp
+*.tmp.DS_Store

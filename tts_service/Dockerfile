@@ -26,4 +26,4 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Starte das TTS-Service über Poetry
-CMD ["poetry", "run", "python", "app/app.py"]
+CMD ["poetry", "run", "python", "app.py"]

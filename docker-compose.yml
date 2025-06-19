@@ -11,6 +11,8 @@ services:
       - tts
     networks:
       - artwalk-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  
 
   tts:
     build:
