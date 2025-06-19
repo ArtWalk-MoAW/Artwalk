@@ -43,7 +43,7 @@
 | **Backend**         | Python (FastAPI), CrewAI, Ollama     |
 | **Image Analysis**  | LLava via CrewAI agents              |
 | **Storage**         | To be done                           |
-| **Audio Output**    | To be done                           |
+| **Audio Output**    | TTS                        |
 
 
 The Data for the Artworks within Germany has been provided by:
@@ -59,11 +59,12 @@ cd frontend
 npm install
 npx expo start
 
-# Start backend
-cd backend
+# Build backend
 poetry install
 uv tool install crewai
-docker build -t artwalk-app .
-docker run -p 8080:8000 artwalk-app
+docker-compose build
+
+# Start backend and TTS Service
+docker-compose up
 `
 ‼️IMPORTANT: Make sure your Python Version is below 3.13 or >= 3.10‼️
