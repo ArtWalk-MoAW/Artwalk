@@ -57,16 +57,18 @@ https://streetartcities.com/open-data
 # Start frontend
 cd Frontend
 npm install
+npm install expo-location
 
 -> change IP in scanner.tsx and hooks/useExhibitionData.tsx (ipconfig getifaddr en0)
 cd artwalk-app
 npx expo start
+#Expo Go app Installieren
+#Scan QR code with the Kamera of your phone
 
 # Build backend
 cd Backend
 poetry install
 poerty shell
-uv tool install crewai
 
 cd ..
 -> open docker app 
@@ -74,5 +76,10 @@ docker-compose build
 
 # Start backend and TTS Service
 docker-compose up
+
+#Ollama modelle und installation noch HIER auflisten:!
+#llava noch installieren
+#litellm noch installieren
+
 `
 ‼️IMPORTANT: Make sure your Python Version is below 3.13 or >= 3.10‼️
