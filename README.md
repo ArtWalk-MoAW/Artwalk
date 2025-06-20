@@ -55,7 +55,7 @@ https://streetartcities.com/open-data
 
 ```bash
 # Start frontend
-cd frontend
+cd Frontend
 npm install
 
 -> change IP in scanner.tsx and hooks/useExhibitionData.tsx (ipconfig getifaddr en0)
@@ -63,7 +63,7 @@ cd artwalk-app
 npx expo start
 
 # Build backend
-cd backend
+cd Backend
 poetry install
 poerty shell
 uv tool install crewai
