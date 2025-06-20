@@ -1,5 +1,17 @@
 from langchain_community.llms.ollama import Ollama
 
+
+
+class CrewCompatibleOllama(Ollama):
+    def supports_stop_words(self) -> bool:
+        return False
+
+    def call(self, prompt: str, stop: list[str] = None, callbacks=None) -> str:
+        return super()._call(prompt, stop=stop)
+
+
+
+
 CATEGORIES = [
     "Mural",
     "Graffiti",
@@ -28,7 +40,7 @@ SYSTEM_PROMPT = (
     "Verwende nur diese Begriffe und keine eigenen Erfindungen. Gib sie durch Kommas getrennt aus."
 )
 
-llm = Ollama(
+llm = CrewCompatibleOllama(
     model="llama3",
     base_url="http://host.docker.internal:11434"
 )

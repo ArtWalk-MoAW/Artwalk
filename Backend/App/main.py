@@ -82,10 +82,6 @@ async def upload_image(image: UploadFile = File(...)):
         artwork=result_json["artwork"],
         description=result_json["description"]
     )
-
-
-    
-
     
     return JSONResponse(content={"message": "Image received"}, status_code=200)
 

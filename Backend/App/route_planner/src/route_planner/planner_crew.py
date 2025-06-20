@@ -3,6 +3,7 @@ from itertools import combinations
 from crewai import Crew, Task
 from App.route_planner.src.route_planner.route_agent import RouteAgent, ClassifyAgent
 from langchain_community.llms.ollama import Ollama
+from App.route_planner.classify_art.utils import CrewCompatibleOllama
 
 from App.route_planner.src.route_planner.utils import (
     haversine,
@@ -15,7 +16,7 @@ from collections import defaultdict
 from pathlib import Path
 
 
-llm = Ollama(
+llm = CrewCompatibleOllama(
     model="llama3",
     base_url="http://host.docker.internal:11434"
 )
