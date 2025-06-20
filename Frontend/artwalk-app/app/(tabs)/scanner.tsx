@@ -61,12 +61,9 @@ export default function App() {
         type: 'image/jpeg',
       } as any);
 
-      const response = await fetch('http://10.181.201.29:8080/upload', {
+      const response = await fetch('http://192.168.178.145:8000/upload', {
         method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        body: formData
       });
 
       if (response.ok) {

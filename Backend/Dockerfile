@@ -5,23 +5,26 @@ WORKDIR /app
 # Install Poetry
 RUN pip install --no-cache-dir poetry
 
-# Copy dependency files (jetzt korrekt aus dem Root)
+# Copy dependency files
 COPY pyproject.toml poetry.lock* ./
 
 # Install dependencies
 RUN poetry install --no-root --no-interaction
 
-# Copy all application code
+# Copy application code
 COPY App/ ./App/
 
-# Create upload folder inside the container
+# Copy data folder
+COPY data/ ./data/
+
+# Create upload folder
 RUN mkdir -p /app/uploads
 
 # Expose port
 EXPOSE 8000
 
-# Set PYTHONPATH for the full App folder
+# Set PYTHONPATH
 ENV PYTHONPATH=/app/App
 
-# Start application
+# Start FastAPI
 CMD ["poetry", "run", "uvicorn", "App.main:app", "--host", "0.0.0.0", "--port", "8000"]
