@@ -75,7 +75,7 @@ async def upload_image(image: UploadFile = File(...)):
     result_json = run_crew_on_image(file_path)
 
     #2. Step: Run Detail Agent crew
-    run_detail_page(
+    restult = run_detail_page(
         artist=result_json["artist"],
         artwork=result_json["artwork"],
         description=result_json["description"]
@@ -85,7 +85,7 @@ async def upload_image(image: UploadFile = File(...)):
     
 
     
-    return JSONResponse(content={"message": "Image received"}, status_code=200)
+    return restult
 
 
 class CommandRequest(BaseModel):
