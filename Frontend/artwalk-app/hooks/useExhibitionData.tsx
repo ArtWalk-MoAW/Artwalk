@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+
+
  type Exhibition = {
   id: string;
   title: string;
@@ -18,7 +20,7 @@ export default function useExhibitionData() {
     const fetchExhibitions = async () => {
       try {
         console.log('Fetching exhibitions...');
-        const response = await fetch('http://10.181.201.29:8080/get-exhibitions');
+        const response = await fetch(`http://10.181.193.55:8080/get-exhibitions`);
         const json = await response.json();
         setData(json);
       } catch (error) {

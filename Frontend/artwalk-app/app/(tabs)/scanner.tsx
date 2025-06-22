@@ -1,17 +1,21 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useRef,useState } from 'react';
+import { useRef,useState ,useEffect} from 'react';
 import React from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View ,Image} from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View ,Image,ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import DetailAnaysisView from "../../components/DetailAnaysisView"
 
 
 import * as FileSystem from 'expo-file-system';
 
+
+
+
 const pollForReport = async (maxRetries = 10, delayMs = 2000) => {
   for (let i = 0; i < maxRetries; i++) {
-    const res = await fetch('http://10.181.201.29:8080/art-report');
+    const res = await fetch(`http://10.181.193.55:8080/art-report`);
     const json = await res.json();
 
     if (res.ok && !json.error) {
@@ -32,16 +36,21 @@ export default function App() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const cameraRef = useRef<any>(null);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   const router = useRouter();
 
 
+  useEffect(() => {
+    if (analysisResult) {
+      console.log("🎯 Neuer analysisResult-Wert:", analysisResult);
+    }
+  }, [analysisResult]);
+
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -49,6 +58,7 @@ export default function App() {
       </View>
     );
   }
+
 
   const takePicture = async () => {
     if (cameraRef.current){
@@ -79,7 +89,7 @@ export default function App() {
         type: 'image/jpeg',
       } as any);
 
-      const response = await fetch('http://10.181.201.29:8080/upload', {
+      const response = await fetch(`http://10.181.193.55:8080/upload`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -88,16 +98,18 @@ export default function App() {
       });
 
       if (response.ok) {
-        console.log("✅ Bild erfolgreich hochgeladen");
+        const json = await response.json();   
+        const artistInfo = JSON.parse(json.raw);     
+        console.log("🎨 Artist Info:", artistInfo);
+        setAnalysisResult(artistInfo)
+        setIsAnalyzing(false);  
+      
       } else {
         console.error("1. Fehler beim Hochladen des Bildes:", response.status, response.statusText);
       }
     } catch (error) {
       console.error("2. Fehler beim Hochladen des Bildes:", error);
-    } finally {
-      setCapturedImage(null);
-      setIsAnalyzing(false); // Ladeanzeige AUS
-    }
+    } 
   };
 
 
@@ -107,7 +119,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {isAnalyzing ? (
+      {analysisResult ? (
+          <ScrollView style={{ padding: 20 }}>
+            <DetailAnaysisView analysisResult={analysisResult} capturedImage={capturedImage} onBack={() => {setAnalysisResult(null); setCapturedImage(null)}}/>
+          </ScrollView>
+        ):  
+      isAnalyzing ? (
         // Ladeanzeige aktiv
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ marginBottom: 20, fontSize: 18 }}>Analyzing image...</Text>

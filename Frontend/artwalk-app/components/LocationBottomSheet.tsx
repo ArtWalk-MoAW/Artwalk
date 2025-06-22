@@ -71,15 +71,15 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef, Props>(
                   <Ionicons
                     name={saved ? 'bookmark' : 'bookmark-outline'}
                     size={30}
-                    color="#F95636"
+                    color="#1D0C02"
                   />
                 </TouchableOpacity>
               </View>
             )}
             <Text style={styles.title}>{location?.title}</Text>
-            <Text style={styles.label}>Adresse:</Text>
+            <Text style={styles.label}>Location</Text>
             <Text style={styles.text}>{location?.address}</Text>
-            <Text style={styles.label}>Beschreibung:</Text>
+            <Text style={styles.label}>Description</Text>
             <Text style={styles.text}>{location?.description}</Text>
           </ScrollView>
         </BottomSheetView>
