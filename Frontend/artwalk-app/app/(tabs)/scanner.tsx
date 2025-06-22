@@ -98,7 +98,13 @@ export default function App() {
       });
 
       if (response.ok) {
-        const json = await response.json();   
+        
+        const json = await response.json(); 
+        
+        if (!json || !json.raw) {
+          throw new Error("❌ JSON response is empty or malformed");
+        }
+        
         const artistInfo = JSON.parse(json.raw);     
         console.log("🎨 Artist Info:", artistInfo);
         setAnalysisResult(artistInfo)
@@ -120,7 +126,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {analysisResult ? (
-          <ScrollView style={{ padding: 20 }}>
+          <ScrollView >
             <DetailAnaysisView analysisResult={analysisResult} capturedImage={capturedImage} onBack={() => {setAnalysisResult(null); setCapturedImage(null)}}/>
           </ScrollView>
         ):  
@@ -171,6 +177,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: '#FFFEFC',
   },
   message: {
     textAlign: 'center',
