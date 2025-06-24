@@ -91,14 +91,14 @@ class DetailAgent():
     def similarity_task(self) -> Task:
         return Task(
             config=self.tasks_config["similarity_task"],
-            output_file="final_art_report.md"
+            
         )
     
     @task
     def final_report_task(self) -> Task:
         return Task(
             config=self.tasks_config['reporting_task'],
-            output_file='final_art_report.md'
+            output_file='final_art_report.json'
         )
 
     @crew
