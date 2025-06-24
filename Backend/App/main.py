@@ -3,7 +3,9 @@ from fastapi.responses import JSONResponse
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
 from App.route_planner.src.route_planner.planner_crew import plan_route
-
+from pathlib import Path
+from json import JSONDecodeError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import json
@@ -77,13 +79,15 @@ async def upload_image(image: UploadFile = File(...)):
     result_json = run_crew_on_image(file_path)
 
     #2. Step: Run Detail Agent crew
-    run_detail_page(
+    detailinfo_result = run_detail_page(
         artist=result_json["artist"],
         artwork=result_json["artwork"],
         description=result_json["description"]
     )
+
+   
     
-    return JSONResponse(content={"message": "Image received"}, status_code=200)
+    return detailinfo_result
 
 
 class CommandRequest(BaseModel):
@@ -120,3 +124,22 @@ def generate_route(request: RouteRequest):
         preferred_styles=request.styles
     )
     return {"route": result}
+
+
+@app.get("/get-Artreport")
+def get_details_art():
+    path = Path("/app/final_art_report.json")
+    
+    if not path.exists():
+        return JSONResponse(content={"error": "File not found"}, status_code=404)
+    
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return JSONResponse(content=data, status_code=200)
+    except json.JSONDecodeError:
+        return JSONResponse(content={"error": "Invalid JSON format in file"}, status_code=500)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+

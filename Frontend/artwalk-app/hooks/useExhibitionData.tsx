@@ -18,7 +18,7 @@ export default function useExhibitionData() {
     const fetchExhibitions = async () => {
       try {
         console.log('Fetching exhibitions...');
-        const response = await fetch('http://192.168.178.145:8000/get-exhibitions');
+        const response = await fetch('http://10.181.193.55:8000/get-exhibitions');
         const json = await response.json();
         setData(json);
       } catch (error) {
