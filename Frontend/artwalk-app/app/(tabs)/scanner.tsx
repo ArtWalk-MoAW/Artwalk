@@ -21,10 +21,13 @@ export default function App() {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [hasError, setHasError] = useState(false);
 
+  
+  
+
 
   const fetchFallback = async () => {
   try {
-    const response = await fetch('http://10.181.193.55:8000/get-Artreport'); 
+    const response = await fetch('http://10.181.219.12:8000/get-Artreport'); 
     if (response.ok) {
       const json = await response.json();
       if (!json || !json.raw) {
@@ -80,6 +83,7 @@ export default function App() {
 
   const  discardImage = () => setCapturedImage(null);
   const keepImage = async () => {
+    let artistInfo;
     if (!capturedImage) return;
 
     try {
@@ -101,20 +105,28 @@ export default function App() {
         type: 'image/jpeg',
       } as any);
 
-      const response = await fetch('http://10.181.193.55:8000/upload', {
+      const response = await fetch('http://10.181.219.12:8000/upload', {
         method: 'POST',
         body: formData
       });
 
       if (response.ok) {
         const json = await response.json(); 
-        console.log(json)
+        console.log("JSON response:", JSON.stringify(json, null, 2));
+        console.log("json.raw:", json.raw);
+        
 
         if (!json || !json.raw) {
           throw new Error("JSON response is empty or malformed");
         }
 
-        const artistInfo = JSON.parse(json.raw);  
+        if (typeof json.raw === 'string') {
+          artistInfo = JSON.parse(json.raw);  
+        } else {
+          artistInfo = json.raw; 
+        }
+
+      
         console.log("Artist Info:", artistInfo);
         setAnalysisResult(artistInfo)
         setIsAnalyzing(false);  
@@ -277,7 +289,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'center'
   },
 });
 
