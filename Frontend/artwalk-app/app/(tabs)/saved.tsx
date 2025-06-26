@@ -1,89 +1,98 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useState } from "react";
-import { TextInput, Button } from "react-native";
-import { StyleSheet } from "react-native";
-
-
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import saveArtwork from "@/components/saveArtwork";
+import { useEffect, useState } from 'react';
+import { LOCAL_BASE_IP } from "@env";
 
 export default function App() {
-  const [command, setCommand] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [host, setHost] = useState<string>('localhost:8080');
+  const [SavedArtworks, setSavedArtworks] = useState([]);
 
-  const sendCommand = async () => {
-      try {
-        const response = await fetch(`http://${host}/run`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ command }),
-      });
+  const fetchArtworks = async () => {
+    try {
+      const response = await fetch(`http://${LOCAL_BASE_IP}:8000/myartworks`);
+      if (response.ok) {
         const data = await response.json();
-        setMessage(data.message);
-      } catch (error) {
-        console.error(error);
-        setMessage('Failed to execute command.');
+        setSavedArtworks(data)
+      } else {
+        console.error("Fehler beim Abrufen");
       }
-  };
+    } catch (error){
+      console.error("Server nicht erreichbar:", error);
+
+    }
+  }
+
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
+
+
+  
+
+  if (SavedArtworks.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>Keine gespeicherten Orte.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Architecture Demo App</Text>
-      <Text style={styles.paragraph}>
-        This is a simple demo app to illustrate communication between frontend 
-        and backend.</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter a host and port"
-        value={host}
-        onChangeText={setHost}
-        autoCapitalize='none'
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter a command"
-        value={command}
-        onChangeText={setCommand}
-        autoCapitalize='none'
-      />
-      <Button title="Send" onPress={sendCommand} />
-      <Text style={styles.message}>{message}</Text>
+    <View style={styles.cont}> 
+    <FlatList
+      data={SavedArtworks}
+      keyExtractor={(item, index) => index.toString()}
+      contentContainerStyle={styles.container}
+      renderItem={({ item }) => (
+        <View style={styles.itemContainer}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.text}>{item.location}</Text>
+          <Text style={styles.text}>{item.description}</Text>
+        </View>
+      )}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+    />
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
+  cont: {
+    backgroundColor: '#FFFEFC',
+
+  },
   container: {
+    paddingVertical: 5,
+    backgroundColor: '#FFFEFC',
+  },
+  itemContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    fontFamily: 'InstrumentSerif-Regular',
+    marginBottom:8.
+  },
+  text: {
+    fontSize: 14,
+    color: '#555',
+    fontFamily: 'InstrumentSans',
+  },
+  separator: {
+    height: 2,
+    backgroundColor: '#1D0C02',
+    width: '100%', 
+  },
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFEFC',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#3A522D',
-  },
-  paragraph: {
+  emptyText: {
     fontSize: 16,
-    marginBottom: 20,
-    color: '#3A522D',
-  },
-  input: {
-    height: 40,
-    borderColor: '#3A522D',
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    width: '80%',
-    backgroundColor: '#FFFFFF',
-  },
-  message: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#3A522D',
+    color: '#999',
   },
 });

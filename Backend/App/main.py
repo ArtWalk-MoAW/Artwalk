@@ -12,6 +12,7 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
+import uuid
 
 print("✅ MAIN.PY WIRD AUSGEFÜHRT")
 
@@ -31,6 +32,11 @@ class RouteRequest(BaseModel):
     max_minutes: int
     num_stops: int
     styles: list[str]
+
+class ArtworkRequest(BaseModel):
+    title:str
+    location: str
+    description: str
 
 class Exhibition(BaseModel):
     id: str
@@ -75,10 +81,10 @@ async def upload_image(image: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    #1. Step: Run image Classifier crew
+  
     result_json = run_crew_on_image(file_path)
 
-    #2. Step: Run Detail Agent crew
+   
     detailinfo_result = run_detail_page(
         artist=result_json["artist"],
         artwork=result_json["artwork"],
@@ -142,4 +148,50 @@ def get_details_art():
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
+
+DATA_FILE = "/app/data/savedArtwork.json"
+
+
+@app.post("/save-artwork")
+async def save_artwork(request:ArtworkRequest):
+    new_data = request.model_dump()
+    print(new_data)
+    new_data["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_data)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f)
+    
+    return {"status": "success", "id": new_data["id"]}
+
+@app.get("/myartworks")
+def get_myartworks():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+@app.delete("/delete/{trip_id}")
+def delete_myart(trip_id: str):
+    if not os.path.exists(DATA_FILE):
+        return {"error": "No data found"}
+    
+    with open(DATA_FILE,"r") as f:
+        data= json.load(f)
+    
+    data = [trip for trip in data  if trip["id"] != trip_id]
+
+    with open(DATA_FILE,"w") as f:
+        json.dump(data, f)
+    
+    return {"status": "deleted"}
+
+
 

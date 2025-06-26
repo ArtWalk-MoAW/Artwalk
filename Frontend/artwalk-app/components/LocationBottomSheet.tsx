@@ -5,8 +5,9 @@ import React, {
   forwardRef,
   useState,
 } from 'react';
-import { Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { Text, StyleSheet, Image, ScrollView,View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import SaveArtwork from './saveArtwork';
 
 export type LocationData = {
   title: string;
@@ -40,14 +41,21 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
     >
       <BottomSheetView style={styles.content}>
         <ScrollView>
-          {location?.image && (
-            <Image source={{ uri: location.image }} style={styles.image} />
-          )}
+          
+          <View style={styles.imageContainer}>
+            {location?.image && (
+                <Image source={{ uri: location.image }} style={styles.image} />  
+            )}
+            <SaveArtwork title={ location?.title || "undefined"} location= {location?.address || "undefined"} description={location?.description || "undefined"} img={ "undefined"}/>
+          </View>
+          
           <Text style={styles.title}>{location?.title}</Text>
           <Text style={styles.label}>Adresse:</Text>
           <Text style={styles.text}>{location?.address}</Text>
           <Text style={styles.label}>Beschreibung:</Text>
           <Text style={styles.text}>{location?.description}</Text>
+          
+          
         </ScrollView>
       </BottomSheetView>
     </BottomSheet>
@@ -82,6 +90,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 180,
     borderRadius: 12,
+    marginBottom: 15,
+  },
+  imageContainer: {
+    position: 'relative',
     marginBottom: 15,
   },
 });
