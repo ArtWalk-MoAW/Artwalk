@@ -59,7 +59,10 @@ cd Frontend
 npm install
 npm install expo-location
 
--> change IP in scanner.tsx and hooks/useExhibitionData.tsx (ipconfig getifaddr en0)
+# enter your IP Adress into the .env.example file and delete ".example"
+# you can find out your Ip Adress via this command:
+ipconfig getifaddr en0
+
 cd artwalk-app
 npx expo start
 # Expo Go app Installieren
