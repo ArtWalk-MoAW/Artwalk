@@ -62,8 +62,8 @@ npm install expo-location
 -> change IP in scanner.tsx and hooks/useExhibitionData.tsx (ipconfig getifaddr en0)
 cd artwalk-app
 npx expo start
-#Expo Go app Installieren
-#Scan QR code with the Kamera of your phone
+# Expo Go app Installieren
+# Scan QR code with the Kamera of your phone
 
 # Build backend
 cd Backend
@@ -71,15 +71,30 @@ poetry install
 poerty shell
 
 cd ..
--> open docker app 
+# install docker app  through the download on this website
+https://www.docker.com/products/docker-desktop/
+# open docker app 
 docker-compose build
 
 # Start backend and TTS Service
 docker-compose up
 
-#Ollama modelle und installation noch HIER auflisten:!
-#llava noch installieren
-#litellm noch installieren
+# Install Ollama on your device through the download on this website:
+https://ollama.com
+
+#start Ollama
+ollama serve
+
+# install llava and llama3
+ollama pull llama3
+ollama pull llava
+
+# check if everything is installed correctly
+ollama list
+
+# install LiteLLM
+cd Backend
+pip install litellm
 
 `
 ‼️IMPORTANT: Make sure your Python Version is below 3.13 or >= 3.10‼️
