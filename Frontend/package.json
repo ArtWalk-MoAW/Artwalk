@@ -2,9 +2,10 @@
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "expo": "^53.0.9",
+    "expo-camera": "~16.1.6",
     "expo-router": "^5.0.7",
     "react": "^19.1.0",
-    "expo-camera": "~16.1.6"
+    "react-native-dotenv": "^3.4.11"
   },
   "devDependencies": {
     "@types/react": "^19.1.5",
