@@ -7,7 +7,7 @@ import { ActivityIndicator } from 'react-native';
 import DetailAnaysisView from '@/components/DetailAnaysisView';
 
 import * as FileSystem from 'expo-file-system';
-import { LOCAL_BASE_IP } from '@env';
+
 
 
 
@@ -26,7 +26,7 @@ export default function App() {
 
   const fetchFallback = async () => {
   try {
-    const response = await fetch(`http://${LOCAL_BASE_IP}:8000/get-Artreport`); 
+    const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/get-Artreport`); 
     if (response.ok) {
       const json = await response.json();
       if (!json || !json.raw) {
@@ -103,7 +103,7 @@ export default function App() {
         type: 'image/jpeg',
       } as any);
 
-      const response = await fetch(`http://${LOCAL_BASE_IP}:8000/upload`, {
+      const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/upload`, {
         method: 'POST',
         body: formData
       });
