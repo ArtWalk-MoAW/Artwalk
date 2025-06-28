@@ -1,31 +1,68 @@
+import { useState, useEffect } from 'react';
+import { getSavedArtworks, saveArtwork, deleteArtwork } from '../services/artworkService';
 
-import { useEffect, useState } from 'react';
-
-
-export function useSavedArtwork(title: string, location: string, description: string) {
+export const useSavedArtwork = (
+  title: string,
+  location: string,
+  description: string,
+  img: string
+) => {
   const [isSaved, setIsSaved] = useState(false);
-
-  const checkIfSaved = async () => {
-    try {
-      const res = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
-      const data = await res.json();
-
-      const match = data.find(
-        (item: any) =>
-          item.title === title &&
-          item.location === location &&
-          item.description === description
-      );
-
-      setIsSaved(!!match);
-    } catch (err) {
-      console.error('Fehler beim Abrufen gespeicherter Werke:', err);
-    }
-  };
+  const [savedId, setSavedId] = useState<string | null>(null);
 
   useEffect(() => {
+    const checkIfSaved = async () => {
+      try {
+        const data = await getSavedArtworks();
+        const match = data.find(
+          (item: any) =>
+            item.title === title &&
+            item.location === location &&
+            item.description === description
+        );
+
+        if (match) {
+          setIsSaved(true);
+          setSavedId(match.id);
+        } else {
+          setIsSaved(false);
+          setSavedId(null);
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden gespeicherter Werke:', error);
+      }
+    };
+
     checkIfSaved();
   }, [title, location, description]);
 
-  return { isSaved, refresh: checkIfSaved };
-}
+  const handleSave = async () => {
+    try {
+      const result = await saveArtwork({ title, location, description, img });
+      setIsSaved(true);
+      setSavedId(result.id);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!savedId) throw new Error('Keine ID vorhanden');
+    try {
+      await deleteArtwork(savedId);
+      setIsSaved(false);
+      setSavedId(null);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return {
+    isSaved,
+    savedId,
+    handleSave,
+    handleDelete,
+  };
+};
+

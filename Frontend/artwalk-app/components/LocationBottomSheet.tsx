@@ -42,12 +42,20 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
       <BottomSheetView style={styles.content}>
         <ScrollView>
           
-          <View style={styles.imageContainer}>
-            {location?.image && (
-                <Image source={{ uri: location.image }} style={styles.image} />  
-            )}
-            <SaveArtwork title={ location?.title || "undefined"} location= {location?.address || "undefined"} description={location?.description || "undefined"} img={ "undefined"}/>
-          </View>
+          {location?.image && (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: location.image }} style={styles.image} />
+    
+              <View style={styles.saveButtonWrapper}>
+                <SaveArtwork
+                  title={location?.title || 'undefined'}
+                  location={location?.address || 'undefined'}
+                  description={location?.description || 'undefined'}
+                  img={location?.image || 'undefined'}
+                />
+              </View>
+            </View>
+)}
           
           <Text style={styles.title}>{location?.title}</Text>
           <Text style={styles.label}>Adresse:</Text>
@@ -86,15 +94,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#444',
   },
+  
+  imageContainer: {
+  position: 'relative',
+  marginBottom: 15,
+  },
   image: {
     width: '100%',
     height: 180,
     borderRadius: 12,
-    marginBottom: 15,
   },
-  imageContainer: {
-    position: 'relative',
-    marginBottom: 15,
+  saveButtonWrapper: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    
   },
 });
 

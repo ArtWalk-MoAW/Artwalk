@@ -37,6 +37,7 @@ class ArtworkRequest(BaseModel):
     title:str
     location: str
     description: str
+    img:str
 
 class Exhibition(BaseModel):
     id: str

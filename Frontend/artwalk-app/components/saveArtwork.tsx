@@ -1,8 +1,7 @@
-import React, { useState,useEffect } from 'react';
+import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-
+import { useSavedArtwork } from '../hooks/useSavedArtwork';
 
 type SaveArtworkProps = {
   title: string;
@@ -12,66 +11,38 @@ type SaveArtworkProps = {
 };
 
 export default function SaveArtwork({ title, location, description, img }: SaveArtworkProps) {
-  const [isSaved, setIsSaved] = useState(false);
+  const {
+    isSaved,
+    handleSave,
+    handleDelete,
+  } = useSavedArtwork(title, location, description, img);
 
-  const checkIfSaved = async () => {
+  const handlePress = async () => {
     try {
-      const res = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
-      const data = await res.json();
-
-      const match = data.find((item: any) =>
-        item.title === title &&
-        item.location === location &&
-        item.description === description
-      );
-
-      setIsSaved(!!match);
-    } catch (err) {
-      console.error("Fehler beim Abrufen gespeicherter Werke:", err);
-    }
-  };
-
-  useEffect(() => {
-    checkIfSaved();
-  }, [title, location, description]);
-
-  const handleSubmit = async () => {
-    const artwork = { title, location, description };
-    try {
-      const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/save-artwork`, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(artwork)
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setIsSaved(true);
-        Alert.alert('Gespeichert!', `ID: ${result.id}`);
+      if (isSaved) {
+        await handleDelete();
+        Alert.alert('Gelöscht!', 'Das Kunstwerk wurde entfernt.');
       } else {
-        Alert.alert('Fehler', 'Konnte nicht speichern');
+        const result = await handleSave();
+        Alert.alert('Gespeichert!', `ID: ${result.id}`);
       }
-    } catch (error) {
-      console.error('Speichern fehlgeschlagen:', error);
-      Alert.alert('Netzwerkfehler', 'Server nicht erreichbar');
+    } catch (error: any) {
+      Alert.alert('Fehler', error.message || 'Unbekannter Fehler');
     }
   };
 
   return (
     <View style={styles.buttonWrapper}>
-      <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+      <TouchableOpacity style={styles.saveButton} onPress={handlePress}>
         <Ionicons
           name={isSaved ? 'bookmark' : 'bookmark-outline'}
           size={36}
-          color={isSaved ? '#E67E22' : '#1D0C02'}
+          color="#000"
         />
       </TouchableOpacity>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   buttonWrapper: {
@@ -80,7 +51,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 20,
+    borderRadius: 50,
     padding: 8,
     elevation: 3,
   },
