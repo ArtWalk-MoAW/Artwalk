@@ -1,13 +1,13 @@
-// Beispiel in useSavedArtwork.ts
+
 import { useEffect, useState } from 'react';
-import { LOCAL_BASE_IP } from '@env';
+
 
 export function useSavedArtwork(title: string, location: string, description: string) {
   const [isSaved, setIsSaved] = useState(false);
 
   const checkIfSaved = async () => {
     try {
-      const res = await fetch(`http://${LOCAL_BASE_IP}:8000/myartworks`);
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
       const data = await res.json();
 
       const match = data.find(

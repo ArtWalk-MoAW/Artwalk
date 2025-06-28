@@ -2,14 +2,14 @@ import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import saveArtwork from "@/components/saveArtwork";
 import { useEffect, useState } from 'react';
-import { LOCAL_BASE_IP } from "@env";
+
 
 export default function App() {
   const [SavedArtworks, setSavedArtworks] = useState([]);
 
   const fetchArtworks = async () => {
     try {
-      const response = await fetch(`http://${LOCAL_BASE_IP}:8000/myartworks`);
+      const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
       if (response.ok) {
         const data = await response.json();
         setSavedArtworks(data)

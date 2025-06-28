@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LOCAL_BASE_IP } from '@env';
+
 
 
 type SaveArtworkProps = {
@@ -16,7 +16,7 @@ export default function SaveArtwork({ title, location, description, img }: SaveA
 
   const checkIfSaved = async () => {
     try {
-      const res = await fetch(`http://${LOCAL_BASE_IP}:8000/myartworks`);
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
       const data = await res.json();
 
       const match = data.find((item: any) =>
@@ -38,7 +38,7 @@ export default function SaveArtwork({ title, location, description, img }: SaveA
   const handleSubmit = async () => {
     const artwork = { title, location, description };
     try {
-      const response = await fetch(`http://${LOCAL_BASE_IP}:8000/save-artwork`, {
+      const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/save-artwork`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
