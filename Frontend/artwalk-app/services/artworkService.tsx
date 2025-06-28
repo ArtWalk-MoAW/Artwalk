@@ -30,3 +30,14 @@ export const deleteArtwork = async (id: string) => {
   if (!res.ok) throw new Error("Fehler beim Löschen");
 };
 
+export const saveArtworkAnalyse = async (artworkAnalyse:any) => {
+  const res = await fetch(`${BASE_URL}/save-artworkAnalyse`, {
+    method: 'POST',
+    headers: {"Content-Type": "application/json",},
+    body: JSON.stringify(artworkAnalyse),
+
+  });
+  if (!res.ok) throw new Error("Fehler beim Speichern");
+  return await res.json();
+}
+

@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView,Image } from 'react-native';
+import React,{useState} from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView,Image,Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {saveArtworkAnalyse} from "../services/artworkService"
 
 
 type Props = {
@@ -10,6 +11,22 @@ type Props = {
 };
 
 export default function DetailAnaysisView({ analysisResult,capturedImage, onBack }: Props) {
+    const [isSaved, setIsSaved] = useState(false);
+
+      const handleSave = async () => {
+  try {
+    const result = await saveArtworkAnalyse(analysisResult);
+    setIsSaved(true);
+    console.log("Gespeichert mit ID:", result.id);
+    Alert.alert('Saved!', `ID: ${result.id}`);
+  } catch (error) {
+    console.error("Fehler beim Speichern:", error);
+    Alert.alert('Error', 'Failed to save the artwork. Please try again.');
+    setIsSaved(false);
+  }
+};
+
+
   
     return (
         <View style={styles.container}>
@@ -17,8 +34,8 @@ export default function DetailAnaysisView({ analysisResult,capturedImage, onBack
               <TouchableOpacity onPress={onBack} style={styles.backButton}>
                    <Ionicons  name="arrow-back" size={28} color="black"/>
               </TouchableOpacity>
-              <TouchableOpacity  style={styles.saveButton} onPress={() => { /* merken logic */ }}>
-                <Ionicons name="bookmark-outline" size={28} color="black" />
+              <TouchableOpacity  style={styles.saveButton} onPress={handleSave}>
+                <Ionicons name={isSaved ? 'bookmark' : 'bookmark-outline'} size={28} color="black" />
               </TouchableOpacity>
           </View>
 

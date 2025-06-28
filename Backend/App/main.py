@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
@@ -194,5 +194,31 @@ def delete_myart(trip_id: str):
     
     return {"status": "deleted"}
 
+ANALYSE_FILE = "/app/data/savedAnalyseArtwork.json"
 
+@app.post("/save-artworkAnalyse")
+async def save_artworkAnalyse(request: Request):
+    new_analyse = await request.json()
+    print(new_analyse)
+    new_analyse["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_analyse)
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data,f)
+
+    return {"status": "success", "id": new_analyse["id"]}
+
+@app.get("/myartworksanalyse")
+def get_myartworksanalyse():
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE, "r") as f:
+            return json.load(f)
+    return []
 
