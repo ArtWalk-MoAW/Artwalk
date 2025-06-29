@@ -16,6 +16,7 @@ from storyaudio.src.storyaudio.crew import StoryAudioCrew
 import shutil
 from fastapi import Request
 import uuid
+from storyaudio.src.storyaudio.main import run_story_audio_from_json
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -138,7 +139,8 @@ def generate_route(request: RouteRequest):
 @app.get("/get-Artreport")
 def get_details_art():
     path = Path("/app/shared-data/final_art_report.json")
-    
+    run_story_audio_from_json(path)
+
     if not path.exists():
         return JSONResponse(content={"error": "File not found"}, status_code=404)
     
