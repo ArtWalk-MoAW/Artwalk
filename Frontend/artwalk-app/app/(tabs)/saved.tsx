@@ -9,6 +9,8 @@ type Artwork = {
   location: string;
   description: string;
   img: string;
+  latitude: number;
+  longitude: number;
   type: 'map' | 'scanned' | 'route';
 };
 

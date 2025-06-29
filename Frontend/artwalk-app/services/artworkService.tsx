@@ -41,3 +41,8 @@ export const saveArtworkAnalyse = async (artworkAnalyse:any) => {
   return await res.json();
 }
 
+export const getScannedArtworks = async () => {
+  const res = await fetch(`${BASE_URL}/myartworksanalyse`);
+  if (!res.ok) throw new Error("Fehler beim Abrufen analysierter Werke");
+  return await res.json();
+};

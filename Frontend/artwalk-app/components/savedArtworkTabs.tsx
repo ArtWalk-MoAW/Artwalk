@@ -10,6 +10,8 @@ type Artwork = {
   location: string;
   description: string;
   img: string;
+  latitude: number; // Assuming latitude and longitude are numbers
+  longitude: number;
 };
 
 type Props = {
@@ -43,6 +45,8 @@ export default function SavedArtworkTabs({
           description={item.description}
           img={item.img}
           onDeleted={onRefresh}
+          latitude={item.latitude} 
+          longitude={item.longitude} 
         />
       )}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
