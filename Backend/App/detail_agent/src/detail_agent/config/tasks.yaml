@@ -83,6 +83,7 @@ reporting_task:
         }
       ]
     }
+
     Do not include ```json or any other markdown symbols.
     All fields must be populated with clear, informative, and precise English-language content.
   expected_output: JSON

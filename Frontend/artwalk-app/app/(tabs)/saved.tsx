@@ -1,89 +1,80 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { useState } from "react";
-import { TextInput, Button } from "react-native";
-import { StyleSheet } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import SavedArtworkTabs from "@/components/savedArtworkTabs";
 
+type Artwork = {
+  id: string;
+  title: string;
+  location: string;
+  description: string;
+  img: string;
+  latitude: number;
+  longitude: number;
+  type: 'map' | 'scanned' | 'route';
+};
 
+export default function SavedArtworksScreen() {
+  const [mapArtworks, setMapArtworks] = useState<Artwork[]>([]);
+  const [scannedArtworks, setScannedArtworks] = useState<Artwork[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-export default function App() {
-  const [command, setCommand] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [host, setHost] = useState<string>('localhost:8080');
+  const fetchArtworks = async () => {
+    setIsLoading(true);
+    try {
+      const [mapResponse, scannedResponse] = await Promise.all([
+        fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`),
+        fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworksanalyse`)
+      ]);
 
-  const sendCommand = async () => {
-      try {
-        const response = await fetch(`http://${host}/run`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ command }),
-      });
-        const data = await response.json();
-        setMessage(data.message);
-      } catch (error) {
-        console.error(error);
-        setMessage('Failed to execute command.');
+      if (mapResponse.ok && scannedResponse.ok) {
+        const mapData = await mapResponse.json();
+        const scannedData = await scannedResponse.json();
+
+        setMapArtworks(mapData);
+        setScannedArtworks(scannedData);
+      } else {
+        console.error("Fehler beim Abrufen der gespeicherten Werke");
       }
+    } catch (error) {
+      console.error("Server nicht erreichbar:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Lädt neu bei jedem Tab-Fokus
+  useFocusEffect(
+    useCallback(() => {
+      fetchArtworks();
+    }, [])
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Lade gespeicherte Werke...</Text>
+        <ActivityIndicator size="large" color="#DB4F00" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Architecture Demo App</Text>
-      <Text style={styles.paragraph}>
-        This is a simple demo app to illustrate communication between frontend 
-        and backend.</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter a host and port"
-        value={host}
-        onChangeText={setHost}
-        autoCapitalize='none'
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter a command"
-        value={command}
-        onChangeText={setCommand}
-        autoCapitalize='none'
-      />
-      <Button title="Send" onPress={sendCommand} />
-      <Text style={styles.message}>{message}</Text>
+    <View style={{ flex: 1 }}>
+      <SavedArtworkTabs/>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFEFC',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#3A522D',
-  },
-  paragraph: {
+  loadingText: {
+    marginBottom: 10,
     fontSize: 16,
-    marginBottom: 20,
-    color: '#3A522D',
-  },
-  input: {
-    height: 40,
-    borderColor: '#3A522D',
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    width: '80%',
-    backgroundColor: '#FFFFFF',
-  },
-  message: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#3A522D',
+    color: "#333",
   },
 });

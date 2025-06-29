@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
@@ -12,6 +12,7 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
+import uuid
 
 print("✅ MAIN.PY WIRD AUSGEFÜHRT")
 
@@ -31,6 +32,12 @@ class RouteRequest(BaseModel):
     max_minutes: int
     num_stops: int
     styles: list[str]
+
+class ArtworkRequest(BaseModel):
+    title:str
+    location: str
+    description: str
+    img:str
 
 class Exhibition(BaseModel):
     id: str
@@ -75,10 +82,10 @@ async def upload_image(image: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    #1. Step: Run image Classifier crew
+  
     result_json = run_crew_on_image(file_path)
 
-    #2. Step: Run Detail Agent crew
+   
     detailinfo_result = run_detail_page(
         artist=result_json["artist"],
         artwork=result_json["artwork"],
@@ -142,4 +149,92 @@ def get_details_art():
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
+
+DATA_FILE = "/app/data/savedArtwork.json"
+
+
+@app.post("/save-artwork")
+async def save_artwork(request:ArtworkRequest):
+    new_data = request.model_dump()
+    print(new_data)
+    new_data["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_data)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f)
+    
+    return {"status": "success", "id": new_data["id"]}
+
+@app.get("/myartworks")
+def get_myartworks():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+@app.delete("/delete/{trip_id}")
+def delete_myart(trip_id: str):
+    if not os.path.exists(DATA_FILE):
+        return {"error": "No data found"}
+    
+    with open(DATA_FILE,"r") as f:
+        data= json.load(f)
+    
+    data = [trip for trip in data  if trip["id"] != trip_id]
+
+    with open(DATA_FILE,"w") as f:
+        json.dump(data, f)
+    
+    return {"status": "deleted"}
+
+ANALYSE_FILE = "/app/data/savedAnalyseArtwork.json"
+
+@app.delete("/delete-analysis/{analyse_id}")
+def delete_myart_analysis(analyse_id: str):
+    if not os.path.exists(ANALYSE_FILE):
+        return {"error": "No data found"}
+
+    with open(ANALYSE_FILE, "r") as f:
+        data = json.load(f)
+
+    data = [item for item in data if item["id"] != analyse_id]
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+    return {"status": "deleted"}
+
+
+@app.post("/save-artworkAnalyse")
+async def save_artworkAnalyse(request: Request):
+    new_analyse = await request.json()
+    print(new_analyse)
+    new_analyse["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_analyse)
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data,f)
+
+    return {"status": "success", "id": new_analyse["id"]}
+
+@app.get("/myartworksanalyse")
+def get_myartworksanalyse():
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE, "r") as f:
+            return json.load(f)
+    return []
 
