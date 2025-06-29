@@ -1,7 +1,18 @@
-generate_audio_task:
+script_task:
   description: >
-    Verwandle den eingegebenen Text in eine Audio-Datei (MP3) und gib den Pfad zur Datei zurück.
+    Generate an engaging English audio text based on the structured art report JSON.
+    The text should summarize the artist's background, describe the visual features of the artwork,
+    offer an interpretation, and place it in historical context. Use clear and natural language,
+    avoiding any placeholders or special characters such as brackets or quotes.
+
+    The text should sound like a friendly and informative audioguide script, easy to listen to and understand.
+
+    YOU MUST RETURN YOUR ANSWER IN THIS EXACT FORMAT:
+    
+    Thought: I now can give a great answer
+    Final Answer: [your full audio script here]
+
+    Do NOT return only a Thought. Do NOT skip Final Answer. Your answer will be invalid otherwise.
   expected_output: >
-    Pfad zur Audio-Datei im Format /audio/dateiname.mp3
-  input_variables:
-    - text
+    - Full audio script in natural English, free from placeholders or special characters
+  agent: audio_writer

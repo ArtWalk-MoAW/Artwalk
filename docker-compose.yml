@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     build:
@@ -10,9 +8,11 @@ services:
     depends_on:
       - tts
     networks:
-      - artwalk-net
-    extra_hosts:
-      - "host.docker.internal:host-gateway"  
+      artwalk-net:
+        aliases:
+          - backend
+    volumes:
+      - ./shared-data:/app/shared-data   # <-- Lokaler Ordner shared-data wird in Container gemappt
 
   tts:
     build:
@@ -21,8 +21,13 @@ services:
     ports:
       - "5005:5005"
     networks:
-      - artwalk-net
+      artwalk-net:
+        aliases:
+          - tts
+    volumes:
+      - ./shared-data:/app/shared-data   # <-- Gleiches Volume auch im TTS Container
 
 networks:
   artwalk-net:
     driver: bridge
+

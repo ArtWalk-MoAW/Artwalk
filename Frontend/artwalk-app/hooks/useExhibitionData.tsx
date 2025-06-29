@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LOCAL_BASE_IP } from '@env';
+
 
  type Exhibition = {
   id: string;
@@ -19,7 +19,7 @@ export default function useExhibitionData() {
     const fetchExhibitions = async () => {
       try {
         console.log('Fetching exhibitions...');
-        const response = await fetch(`http://${LOCAL_BASE_IP}:8000/get-exhibitions`);
+        const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/get-exhibitions`);
         const json = await response.json();
         setData(json);
       } catch (error) {
@@ -34,4 +34,5 @@ export default function useExhibitionData() {
 
   return { data, loading };
 }
+
 

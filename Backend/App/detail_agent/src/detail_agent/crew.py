@@ -10,7 +10,7 @@ from crewai import LLM
 
 
 llm = LLM(
-    model = "ollama/llama3.2",
+    model = "ollama/llama3",
     base_url = "http://host.docker.internal:11434",
     temperature= 0.1,
 )
