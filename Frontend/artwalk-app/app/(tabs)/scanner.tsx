@@ -2,16 +2,11 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRef,useState , useEffect} from 'react';
 import React from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View ,Image,ScrollView} from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
 import DetailAnaysisView from '@/components/DetailAnaysisView';
 
 import * as FileSystem from 'expo-file-system';
-
-
-
-
-
 
 
 export default function App() {

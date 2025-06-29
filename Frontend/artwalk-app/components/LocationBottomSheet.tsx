@@ -52,6 +52,7 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
                   location={location?.address || 'undefined'}
                   description={location?.description || 'undefined'}
                   img={location?.image || 'undefined'}
+                  type="map"
                 />
               </View>
             </View>

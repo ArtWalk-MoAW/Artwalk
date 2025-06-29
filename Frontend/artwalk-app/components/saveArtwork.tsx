@@ -8,14 +8,16 @@ type SaveArtworkProps = {
   location: string;
   description: string;
   img: string;
+  type: 'map' | 'scanned' | 'route'; 
 };
 
-export default function SaveArtwork({ title, location, description, img }: SaveArtworkProps) {
+export default function SaveArtwork({ title, location, description, img, type }: SaveArtworkProps) {
   const {
     isSaved,
     handleSave,
     handleDelete,
-  } = useSavedArtwork(title, location, description, img);
+  } = useSavedArtwork(title, location, description, img, type); // ⬅️ type weitergeben
+
 
   const handlePress = async () => {
     try {

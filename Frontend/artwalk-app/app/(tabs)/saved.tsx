@@ -1,99 +1,82 @@
-import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import saveArtwork from "@/components/saveArtwork";
-import { useEffect, useState } from 'react';
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import SavedArtworkTabs from "@/components/savedArtworkTabs";
 
+type Artwork = {
+  id: string;
+  title: string;
+  location: string;
+  description: string;
+  img: string;
+  type: 'map' | 'scanned' | 'route';
+};
 
-export default function App() {
-  const [SavedArtworks, setSavedArtworks] = useState([]);
+export default function SavedArtworksScreen() {
+  const [mapArtworks, setMapArtworks] = useState<Artwork[]>([]);
+  const [scannedArtworks, setScannedArtworks] = useState<Artwork[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchArtworks = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`);
-      if (response.ok) {
-        const data = await response.json();
-        setSavedArtworks(data)
+      const [mapResponse, scannedResponse] = await Promise.all([
+        fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworks`),
+        fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/myartworksanalyse`)
+      ]);
+
+      if (mapResponse.ok && scannedResponse.ok) {
+        const mapData = await mapResponse.json();
+        const scannedData = await scannedResponse.json();
+
+        setMapArtworks(mapData);
+        setScannedArtworks(scannedData);
       } else {
-        console.error("Fehler beim Abrufen");
+        console.error("Fehler beim Abrufen der gespeicherten Werke");
       }
-    } catch (error){
+    } catch (error) {
       console.error("Server nicht erreichbar:", error);
-
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  useEffect(() => {
-    fetchArtworks();
-  }, []);
+  // Lädt neu bei jedem Tab-Fokus
+  useFocusEffect(
+    useCallback(() => {
+      fetchArtworks();
+    }, [])
+  );
 
-
-  
-
-  if (SavedArtworks.length === 0) {
+  if (isLoading) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Keine gespeicherten Orte.</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Lade gespeicherte Werke...</Text>
+        <ActivityIndicator size="large" color="#DB4F00" />
       </View>
     );
   }
 
   return (
-    <View style={styles.cont}> 
-    <FlatList
-      data={SavedArtworks}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={styles.container}
-      renderItem={({ item }) => (
-        <View style={styles.itemContainer}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.text}>{item.location}</Text>
-          <Text style={styles.text}>{item.description}</Text>
-        </View>
-      )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-    />
+    <View style={{ flex: 1 }}>
+      <SavedArtworkTabs
+        mapArtworks={mapArtworks}
+        scannedArtworks={scannedArtworks}
+        onRefresh={fetchArtworks}
+      />
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
-  cont: {
-    backgroundColor: '#FFFEFC',
-
-  },
-  container: {
-    paddingVertical: 5,
-    backgroundColor: '#FFFEFC',
-  },
-  itemContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    fontFamily: 'InstrumentSerif-Regular',
-    marginBottom:8.
-  },
-  text: {
-    fontSize: 14,
-    color: '#555',
-    fontFamily: 'InstrumentSans',
-  },
-  separator: {
-    height: 2,
-    backgroundColor: '#1D0C02',
-    width: '100%', 
-  },
-  emptyContainer: {
+  loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  emptyText: {
+  loadingText: {
+    marginBottom: 10,
     fontSize: 16,
-    color: '#999',
+    color: "#333",
   },
-  
 });

@@ -6,6 +6,7 @@ import MapScreen from '@/components/Mapcompnent';
 
 
 
+
 export default function LocationDebugScreen() {
   const { location, errorMsg } = useUserLocation();
 
