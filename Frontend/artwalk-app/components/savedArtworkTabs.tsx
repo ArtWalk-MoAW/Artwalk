@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, Dimensions, StyleSheet } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import SavedArtworkItem from "@/components/savedArtworkItem";
-import { getSavedArtworks, getScannedArtworks } from "@/services/artworkService";
-import DetailAnaysisView from "./DetailAnaysisView";
+import {
+  getSavedArtworks,
+  getScannedArtworks,
+} from "@/services/artworkService";
+import DetailAnalysisView from "./DetailAnalysisView";
 
 type Artwork = {
   id: string;
@@ -41,7 +44,8 @@ export default function SavedArtworkTabs() {
         id: item.id,
         title: item.artwork_analysis?.title || "Unbenannt",
         location: item.artist_info?.name || "Unbekannter Künstler",
-        description: item.artwork_analysis?.interpretation || "Keine Beschreibung",
+        description:
+          item.artwork_analysis?.interpretation || "Keine Beschreibung",
         img: item.captured_image,
         latitude: 0,
         longitude: 0,
@@ -72,7 +76,9 @@ export default function SavedArtworkTabs() {
       <FlatList
         data={data}
         keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={isEmpty ? styles.emptyContentContainer : styles.container}
+        contentContainerStyle={
+          isEmpty ? styles.emptyContentContainer : styles.container
+        }
         renderItem={({ item }) => (
           <SavedArtworkItem
             id={item.id}
@@ -127,7 +133,7 @@ export default function SavedArtworkTabs() {
 
   if (analysisViewData) {
     return (
-      <DetailAnaysisView
+      <DetailAnalysisView
         analysisResult={analysisViewData.analysisResult}
         capturedImage={analysisViewData.capturedImage}
         onBack={() => setAnalysisViewData(null)}

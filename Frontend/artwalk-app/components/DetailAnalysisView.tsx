@@ -17,7 +17,7 @@ type Props = {
   capturedImage: string | null;
 };
 
-export default function DetailAnaysisView({
+export default function DetailAnalysisView({
   analysisResult,
   capturedImage,
   onBack,
