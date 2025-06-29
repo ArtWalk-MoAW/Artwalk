@@ -1,8 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import DeleteArtworkButton from "./DeleteArtwork";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Icon-Paket importieren
+import { Ionicons } from "@expo/vector-icons";
+import { deleteArtwork, deleteScannedArtwork } from "@/services/artworkService";
 
 type Props = {
   id: string;
@@ -13,6 +21,14 @@ type Props = {
   onDeleted: () => void;
   latitude: number;
   longitude: number;
+  type?: "map" | "scanned";
+  originalJson?: any;
+  onOpenAnalysis?: () => void;
+};
+
+// 🔧 Entfernt einfache HTML-Tags aus Text
+const stripHtmlTags = (text: string) => {
+  return text.replace(/<[^>]*>/g, "").trim();
 };
 
 export default function SavedArtworkItem({
@@ -24,38 +40,67 @@ export default function SavedArtworkItem({
   onDeleted,
   latitude,
   longitude,
+  type,
+  originalJson,
+  onOpenAnalysis,
 }: Props) {
   const router = useRouter();
 
-  const handleOpenInMap = () => {
-    router.push({
-      pathname: "/", // oder dein tatsächlicher Map-Tab-Pfad
-      params: {
-        artwork: JSON.stringify({
-          title,
-          address: location,
-          description,
-          image: img,
-          latitude,
-          longitude,
-        }),
-      },
-    });
+  const handleOpen = () => {
+    if (type === "scanned" && onOpenAnalysis) {
+      onOpenAnalysis();
+    } else {
+      router.push({
+        pathname: "/", // ggf. deine Map-Ansicht anpassen
+        params: {
+          artwork: JSON.stringify({
+            title,
+            address: location,
+            description,
+            image: img,
+            latitude,
+            longitude,
+          }),
+        },
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (type === "scanned") {
+        await deleteScannedArtwork(id);
+      } else {
+        await deleteArtwork(id);
+      }
+      onDeleted();
+    } catch (err) {
+      console.error("Fehler beim Löschen:", err);
+      Alert.alert("Fehler", "Das Werk konnte nicht gelöscht werden.");
+    }
   };
 
   return (
-    <TouchableOpacity onPress={handleOpenInMap}>
+    <TouchableOpacity onPress={handleOpen}>
       <View style={styles.itemContainer}>
-        <DeleteArtworkButton id={id} onDeleted={onDeleted} />
-        <Image source={{ uri: img }} style={styles.image} />
+        <DeleteArtworkButton id={id} onDeleted={handleDelete} />
+        <Image
+          source={{ uri: img || "https://via.placeholder.com/80" }}
+          style={styles.image}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.title}>{title}</Text>
           <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={16} color="#555" style={{marginRight:5}} />
+            <Ionicons
+              name={type === "scanned" ? "brush-outline" : "location-outline"}
+              size={16}
+              color="#555"
+              style={{ marginRight: 5 }}
+            />
             <Text style={styles.text}>{location}</Text>
           </View>
           <Text style={styles.text} numberOfLines={3} ellipsizeMode="tail">
-            {description}
+            {stripHtmlTags(description)}
           </Text>
         </View>
       </View>
@@ -95,7 +140,6 @@ const styles = StyleSheet.create({
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5 // oder `marginRight` im Icon verwenden, wenn `gap` nicht funktioniert
-},
-
+    marginBottom: 5,
+  },
 });

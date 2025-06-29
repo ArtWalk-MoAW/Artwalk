@@ -196,6 +196,22 @@ def delete_myart(trip_id: str):
 
 ANALYSE_FILE = "/app/data/savedAnalyseArtwork.json"
 
+@app.delete("/delete-analysis/{analyse_id}")
+def delete_myart_analysis(analyse_id: str):
+    if not os.path.exists(ANALYSE_FILE):
+        return {"error": "No data found"}
+
+    with open(ANALYSE_FILE, "r") as f:
+        data = json.load(f)
+
+    data = [item for item in data if item["id"] != analyse_id]
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+    return {"status": "deleted"}
+
+
 @app.post("/save-artworkAnalyse")
 async def save_artworkAnalyse(request: Request):
     new_analyse = await request.json()

@@ -5,7 +5,7 @@ import React, {
   forwardRef,
   useState,
 } from 'react';
-import { Text, StyleSheet, Image, ScrollView,View } from 'react-native';
+import { Text, StyleSheet, Image, ScrollView, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import SaveArtwork from './saveArtwork';
 
@@ -18,6 +18,11 @@ export type LocationData = {
 
 export type LocationBottomSheetRef = {
   open: (data: LocationData) => void;
+};
+
+// Funktion zum Entfernen von HTML-Tags
+const stripHtml = (html: string): string => {
+  return html.replace(/<[^>]*>/g, '').trim();
 };
 
 const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
@@ -41,11 +46,10 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
     >
       <BottomSheetView style={styles.content}>
         <ScrollView>
-          
           {location?.image && (
             <View style={styles.imageContainer}>
               <Image source={{ uri: location.image }} style={styles.image} />
-    
+
               <View style={styles.saveButtonWrapper}>
                 <SaveArtwork
                   title={location?.title || 'undefined'}
@@ -56,15 +60,15 @@ const LocationBottomSheet = forwardRef<LocationBottomSheetRef>((props, ref) => {
                 />
               </View>
             </View>
-)}
-          
+          )}
+
           <Text style={styles.title}>{location?.title}</Text>
-          <Text style={styles.label}>Adresse:</Text>
+          <Text style={styles.label}>Adress:</Text>
           <Text style={styles.text}>{location?.address}</Text>
-          <Text style={styles.label}>Beschreibung:</Text>
-          <Text style={styles.text}>{location?.description}</Text>
-          
-          
+          <Text style={styles.label}>Description:</Text>
+          <Text style={styles.text}>
+            {location?.description ? stripHtml(location.description) : ''}
+          </Text>
         </ScrollView>
       </BottomSheetView>
     </BottomSheet>
@@ -80,25 +84,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 35,
     marginBottom: 10,
-    fontFamily: "InstrumentSerif-Regular",
+    fontFamily: 'InstrumentSerif-Regular',
   },
   label: {
     marginTop: 10,
     marginBottom: 5,
     fontWeight: 'bold',
     fontFamily: 'InstrumentSans-Bold',
-     fontSize: 15,
+    fontSize: 15,
   },
   text: {
     marginBottom: 8,
-    fontFamily: "InstrumentSans",
+    fontFamily: 'InstrumentSans',
     fontSize: 15,
     color: '#444',
   },
-  
   imageContainer: {
-  position: 'relative',
-  marginBottom: 15,
+    position: 'relative',
+    marginBottom: 15,
   },
   image: {
     width: '100%',
@@ -109,11 +112,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    
   },
 });
 
 export default LocationBottomSheet;
-
-
-

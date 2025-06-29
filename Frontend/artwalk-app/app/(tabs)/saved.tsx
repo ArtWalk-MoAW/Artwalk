@@ -61,11 +61,7 @@ export default function SavedArtworksScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <SavedArtworkTabs
-        mapArtworks={mapArtworks}
-        scannedArtworks={scannedArtworks}
-        onRefresh={fetchArtworks}
-      />
+      <SavedArtworkTabs/>
     </View>
   );
 }

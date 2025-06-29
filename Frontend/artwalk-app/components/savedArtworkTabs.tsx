@@ -1,71 +1,114 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, Dimensions, StyleSheet } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import savedCard from "@/components/savedArtworkItem";
 import SavedArtworkItem from "@/components/savedArtworkItem";
+import { getSavedArtworks, getScannedArtworks } from "@/services/artworkService";
+import DetailAnaysisView from "./DetailAnaysisView";
 
 type Artwork = {
-  id: string; // Assuming you have an id for the artwork
+  id: string;
   title: string;
   location: string;
   description: string;
   img: string;
-  latitude: number; // Assuming latitude and longitude are numbers
+  latitude: number;
   longitude: number;
+  type?: "map" | "scanned";
+  originalJson?: any;
 };
 
-type Props = {
-  mapArtworks: Artwork[];
-  scannedArtworks: Artwork[];
-  onRefresh?: () => void;
-};
-
-export default function SavedArtworkTabs({
-  mapArtworks,
-  scannedArtworks,
-  onRefresh = () => {},
-}: Props) {
+export default function SavedArtworkTabs() {
   const [index, setIndex] = useState(0);
+  const [mapArtworks, setMapArtworks] = useState<Artwork[]>([]);
+  const [scannedArtworks, setScannedArtworks] = useState<Artwork[]>([]);
+  const [analysisViewData, setAnalysisViewData] = useState<{
+    analysisResult: any;
+    capturedImage: string;
+  } | null>(null);
+
   const [routes] = useState([
     { key: "map", title: "Map Art" },
     { key: "scanned", title: "Scanned Art" },
     { key: "routes", title: "Routes" },
   ]);
 
-  const renderArtList = (data: Artwork[]) => (
-    <FlatList
-      data={data}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={styles.container}
-      renderItem={({ item }) => (
-        <SavedArtworkItem
-          id={item.id}
-          title={item.title}
-          location={item.location}
-          description={item.description}
-          img={item.img}
-          onDeleted={onRefresh}
-          latitude={item.latitude} 
-          longitude={item.longitude} 
-        />
-      )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-      ListEmptyComponent={
-        <View style={styles.emptyContainer}>
+  const loadData = async () => {
+    try {
+      const mapData = await getSavedArtworks();
+      const scannedRaw = await getScannedArtworks();
+
+      const scanned = scannedRaw.map((item: any) => ({
+        id: item.id,
+        title: item.artwork_analysis?.title || "Unbenannt",
+        location: item.artist_info?.name || "Unbekannter Künstler",
+        description: item.artwork_analysis?.interpretation || "Keine Beschreibung",
+        img: item.captured_image,
+        latitude: 0,
+        longitude: 0,
+        type: "scanned",
+        originalJson: item,
+      }));
+
+      const mapped = mapData.map((item: any) => ({
+        ...item,
+        type: "map",
+      }));
+
+      setMapArtworks(mapped);
+      setScannedArtworks(scanned);
+    } catch (err) {
+      console.error("Fehler beim Laden der Artworks:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const renderArtList = (data: Artwork[]) => {
+    const isEmpty = data.length === 0;
+
+    return (
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={isEmpty ? styles.emptyContentContainer : styles.container}
+        renderItem={({ item }) => (
+          <SavedArtworkItem
+            id={item.id}
+            title={item.title}
+            location={item.location}
+            description={item.description}
+            img={item.img}
+            onDeleted={loadData}
+            latitude={item.latitude}
+            longitude={item.longitude}
+            type={item.type}
+            originalJson={item.originalJson}
+            onOpenAnalysis={() =>
+              setAnalysisViewData({
+                analysisResult: item.originalJson,
+                capturedImage: item.img,
+              })
+            }
+          />
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListEmptyComponent={
           <Text style={styles.emptyText}>
-            Keine gespeicherten Orte in dieser Kategorie.
+            No saved Artworks within this category.
           </Text>
-        </View>
-      }
-    />
-  );
+        }
+      />
+    );
+  };
 
   const renderScene = SceneMap({
     map: () => renderArtList(mapArtworks),
     scanned: () => renderArtList(scannedArtworks),
     routes: () => (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Keine Routen gespeichert.</Text>
+      <View style={styles.emptyContentContainer}>
+        <Text style={styles.emptyText}>No saved routes.</Text>
       </View>
     ),
   });
@@ -81,6 +124,16 @@ export default function SavedArtworkTabs({
       pressColor="transparent"
     />
   );
+
+  if (analysisViewData) {
+    return (
+      <DetailAnaysisView
+        analysisResult={analysisViewData.analysisResult}
+        capturedImage={analysisViewData.capturedImage}
+        onBack={() => setAnalysisViewData(null)}
+      />
+    );
+  }
 
   return (
     <TabView
@@ -103,35 +156,22 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     backgroundColor: "#FFFEFC",
   },
-  itemContainer: {
-    paddingVertical: 20,
+  emptyContentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    fontFamily: "InstrumentSerif-Regular",
-    marginBottom: 8,
-  },
-  text: {
-    fontSize: 14,
-    color: "#555",
-    fontFamily: "InstrumentSans",
+    backgroundColor: "#FFFEFC",
   },
   separator: {
     height: 2,
     backgroundColor: "#1D0C02",
     width: "100%",
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
-  },
   emptyText: {
     fontSize: 16,
     color: "#999",
+    textAlign: "center",
   },
   tabBar: {
     backgroundColor: "#FFFEFC",

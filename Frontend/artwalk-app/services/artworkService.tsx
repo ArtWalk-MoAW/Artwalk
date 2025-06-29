@@ -30,6 +30,14 @@ export const deleteArtwork = async (id: string) => {
   if (!res.ok) throw new Error("Fehler beim Löschen");
 };
 
+export const deleteScannedArtwork = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/delete-analysis/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error("Fehler beim Löschen analysierter Werke");
+};
+
+
 export const saveArtworkAnalyse = async (artworkAnalyse:any) => {
   const res = await fetch(`${BASE_URL}/save-artworkAnalyse`, {
     method: 'POST',
