@@ -1,16 +1,11 @@
 from langchain_community.llms.ollama import Ollama
 
-
-
 class CrewCompatibleOllama(Ollama):
     def supports_stop_words(self) -> bool:
         return False
 
     def call(self, prompt: str, stop: list[str] = None, callbacks=None) -> str:
-        return super()._call(prompt, stop=stop)
-
-
-
+        return super().invoke(input=prompt, stop=stop)
 
 CATEGORIES = [
     "Mural",

@@ -143,3 +143,18 @@ def get_details_art():
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
 
+@app.get("/artworks")
+def get_all_artworks():
+    path = Path("/app/data/munich_classified.json")
+    
+    if not path.exists():
+        return JSONResponse(content={"error": "File not found"}, status_code=404)
+    
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return JSONResponse(content=data, status_code=200)
+    except json.JSONDecodeError:
+        return JSONResponse(content={"error": "Invalid JSON format in file"}, status_code=500)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)

@@ -9,11 +9,6 @@ import DetailAnaysisView from '@/components/DetailAnaysisView';
 import * as FileSystem from 'expo-file-system';
 
 
-
-
-
-
-
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();

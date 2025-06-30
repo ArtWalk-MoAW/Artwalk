@@ -16,22 +16,18 @@ def normalize(text: str) -> str:
     }
     for k, v in replacements.items():
         text = text.replace(k, v)
-    # Entferne Akzente etc.
     text = unicodedata.normalize("NFKD", text).encode("ASCII", "ignore").decode("utf-8")
     return text.lower()
 
 def match_district_name(user_input, known_districts):
     normalized_input = normalize(user_input)
 
-    # 1. Teilwort-Matching
     for district in known_districts:
         if normalized_input in normalize(district):
             return district
 
-    # 2. Fuzzy-Matching
     match = difflib.get_close_matches(normalized_input, [normalize(d) for d in known_districts], n=1, cutoff=0.6)
     if match:
-        # Rückübersetzen zum echten Namen
         for d in known_districts:
             if normalize(d) == match[0]:
                 return d
@@ -45,9 +41,19 @@ def haversine(lat1, lon1, lat2, lon2):
     a = sin(d_lat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(d_lon / 2)**2
     return 2 * R * asin(sqrt(a))
 
+from pathlib import Path
+import json
+
 def load_district_data():
-    path = Path(__file__).parents[2] / "data" / "districts.json"
-    with open(path, "r") as f:
+    backend_root = Path(__file__).resolve().parents[4] 
+    data_path = backend_root / "data" / "districts.json"
+
+    print(f"Loading districts.json from: {data_path}")
+
+    if not data_path.exists():
+        raise FileNotFoundError(f"Districts file not found at: {data_path}")
+
+    with open(data_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def get_district_by_coords(lat, lon):

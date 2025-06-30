@@ -31,9 +31,9 @@ class ClassifyAgent:
             if not artwork.get("style"):
                 description = artwork.get("description", "")
 
-                print(f"🎨 Klassifiziere: '{artwork.get('title', 'Unbenannt')}'")
-                print(f"📝 Beschreibung: {description[:100]}...")  # Optional: nur die ersten 100 Zeichen
+                print(f"Klassifiziere: '{artwork.get('title', 'Unbenannt')}'")
+                print(f"Beschreibung: {description[:100]}...")
 
                 artwork["style"] = classify_art_style(description)
 
-                print(f"✅ Ergebnis: {artwork['style']}\n")
+                print(f"Ergebnis: {artwork['style']}\n")
