@@ -1,6 +1,9 @@
 script_task:
   description: >
-    Generate an engaging English audio text based on the structured art report JSON.
+    Generate an engaging English audio text based on the following structured art report JSON:
+
+    {art_json}
+
     The text should summarize the artist's background, describe the visual features of the artwork,
     offer an interpretation, and place it in historical context. Use clear and natural language,
     avoiding any placeholders or special characters such as brackets or quotes.

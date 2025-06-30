@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 import requests
 from dotenv import load_dotenv
+from storyaudio.src.storyaudio.main import run_story_audio
+
 
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
@@ -64,20 +66,59 @@ def ping():
     return {"message": "ArtWalk Agent is alive!"}
 
 # 📤 Upload
+
 @app.post("/upload")
 async def upload_image(image: UploadFile = File(...)):
+    import json
+    import shutil
+    import os
+    from pathlib import Path
+
+    # 📁 Upload sichern
     os.makedirs("uploads", exist_ok=True)
     file_path = f"uploads/{image.filename}"
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
+    # 🖼️ 1. Klassifikation
     result_json = run_crew_on_image(file_path)
+
+    # 📄 2. Detail-Agent – CrewOutput holen
     detailinfo_result = run_detail_page(
         artist=result_json["artist"],
         artwork=result_json["artwork"],
         description=result_json["description"]
     )
-    return detailinfo_result
+
+    # 🔁 CrewOutput sauber in dict umwandeln
+    if hasattr(detailinfo_result, "model_dump"):
+        detailinfo_result_dict = detailinfo_result.model_dump()
+    elif hasattr(detailinfo_result, "raw") and detailinfo_result.raw:
+        try:
+            detailinfo_result_dict = json.loads(detailinfo_result.raw)
+        except json.JSONDecodeError:
+            raise ValueError("❌ Ungültiges JSON in detailinfo_result.raw")
+    elif isinstance(detailinfo_result, dict):
+        detailinfo_result_dict = detailinfo_result
+    else:
+        raise ValueError("❌ Konnte detailinfo_result nicht in dict umwandeln")
+
+    # ✅ Optional: sichere Detailinfo für Fallback
+    final_report_path = Path("/app/final_art_report.json")
+    with final_report_path.open("w", encoding="utf-8") as f:
+        json.dump(detailinfo_result_dict, f, indent=2, ensure_ascii=False)
+
+    # 🎧 3. Story erzeugen
+    story_result = run_story_audio(detailinfo_result_dict)
+
+    # ✅ Return für Frontend – analysedaten + story
+    return {
+        "analysis": detailinfo_result_dict,
+        "artworkId": story_result["artworkId"],
+        "storyText": story_result["storyText"]
+    }
+
+
 
 # 🧠 Route
 @app.post("/route")
@@ -112,20 +153,7 @@ def get_details_art():
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 # 🧠 Story erzeugen
-@app.post("/generate-story")
-def generate_story():
-    path = Path("/app/final_art_report.json")
-    if not path.exists():
-        return JSONResponse(content={"error": "Art Report not found"}, status_code=404)
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            art_report = json.load(f)
-        result = StoryAudioCrew().crew().kickoff(inputs={"art_json": art_report})
-        with open("/app/shared-data/story_output.json", "w", encoding="utf-8") as f:
-            json.dump({"storyText": str(result)}, f, indent=2, ensure_ascii=False)
-        return {"storyText": str(result)}
-    except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+
 
 # 🔉 An TTS schicken
 @app.post("/send-to-tts")

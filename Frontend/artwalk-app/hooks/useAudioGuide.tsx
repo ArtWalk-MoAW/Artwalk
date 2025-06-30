@@ -22,43 +22,25 @@ export function useAudioGuide() {
     setError(null);
 
     try {
-      // 🖼️ 1. Story generieren
-      const genResponse = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/generate-story`, {
-        method: 'POST',
-      });
-      const genData = await genResponse.json();
+      // 📥 1. Lade storyText vom Backend (GET)
+      const storyRes = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/story-output/${artworkId}`);
+      const storyData = await storyRes.json();
 
-      if (!genResponse.ok || !genData.storyText) {
-        console.warn("⚠️ Fehlerhafte Story-Response:", genData);
-        throw new Error(genData.error || 'Fehler beim Story-Generieren');
+      if (!storyRes.ok || !storyData.storyText || storyData.storyText.length < 10) {
+        throw new Error(storyData.error || "Fehler beim Laden des Audiotexts.");
       }
 
-      if (genData.storyText.trim().length < 10) {
-        console.warn("⚠️ Ungültiger storyText:", genData.storyText);
-        throw new Error("Fehler: Leerer oder unbrauchbarer storyText.");
-      }
-
-      console.log("📝 Generierter storyText:", genData.storyText);
-      console.log("🎯 Starte Audioerzeugung mit artworkId:", artworkId);
-
-      // 🔉 2. An TTS senden
-      const ttsResponse = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/send-to-tts`, {
+      // 🔊 2. Sende an TTS
+      const ttsRes = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/send-to-tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          storyText: genData.storyText,
-          artworkId
-        })
+        body: JSON.stringify({ storyText: storyData.storyText, artworkId })
       });
 
-      const ttsData = await ttsResponse.json();
-      if (!ttsResponse.ok || !ttsData.url) {
-        console.warn("❌ Fehlerhafte TTS-Antwort:", ttsData);
+      const ttsData = await ttsRes.json();
+      if (!ttsRes.ok || !ttsData.url) {
         throw new Error(ttsData.error || 'Fehler beim TTS-Service');
       }
-
-      console.log("✅ TTS Response URL:", ttsData.url);
-
 
       audioCache[artworkId] = ttsData.url;
       onSuccess?.(ttsData.url);
