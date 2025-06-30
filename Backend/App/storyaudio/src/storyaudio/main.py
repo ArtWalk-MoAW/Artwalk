@@ -2,9 +2,9 @@ import json
 from crew import StoryAudioCrew
 from pathlib import Path
 
-def run_story_audio_from_json(json_path):
+def run_story_audio_from_json():
     try:
-        #json_path = Path("/app/final_art_report.json")
+        json_path = Path("/app/final_art_report.json")
 
         if not json_path.exists():
             raise FileNotFoundError(f"{json_path} wurde nicht gefunden.")

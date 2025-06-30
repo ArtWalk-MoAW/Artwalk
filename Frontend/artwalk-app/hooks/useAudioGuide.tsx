@@ -57,6 +57,9 @@ export function useAudioGuide() {
         throw new Error(ttsData.error || 'Fehler beim TTS-Service');
       }
 
+      console.log("✅ TTS Response URL:", ttsData.url);
+
+
       audioCache[artworkId] = ttsData.url;
       onSuccess?.(ttsData.url);
     } catch (e: any) {

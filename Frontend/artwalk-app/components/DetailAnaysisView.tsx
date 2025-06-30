@@ -123,8 +123,13 @@ export default function DetailAnaysisView({ analysisResult, capturedImage, onBac
                   },
                 }),
               artworkId
+
+              
             )
+
           }
+
+          
 
             disabled={loading}
           >
