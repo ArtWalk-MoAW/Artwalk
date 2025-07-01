@@ -17,7 +17,7 @@ from App.route_planner.src.route_planner.utils import (
 
 llm = CrewCompatibleOllama(
     model="llama3",
-    base_url="http://localhost:11434"
+    base_url="http://host.docker.internal:11434"
 )
 
 def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferred_styles: list[str], with_description_only: bool = True) -> list[dict]:
