@@ -25,17 +25,9 @@ export default function DetailAnaysisView({
   const router = useRouter();
   const { loading, error, generateAudio } = useAudioGuide();
 
-  // 🧠 Sichere Artwork-ID bestimmen
-  const artworkId =
-    analysisResult?.id ||
-    analysisResult?.artwork_analysis?.title
-      ?.toLowerCase()
-      .replace(/\s+/g, "_")
-      .replace(/[^\w-]/g, "") ||
-    "untitled";
-
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color="black" />
@@ -50,33 +42,33 @@ export default function DetailAnaysisView({
         </TouchableOpacity>
       </View>
 
+      {/* Bild */}
       {capturedImage && (
         <Image source={{ uri: capturedImage }} style={styles.imagePreview} />
       )}
 
       <ScrollView>
+        {/* Titel */}
         <Text style={styles.title}>
           {analysisResult?.artwork_analysis?.title || "No Artwork information."}
         </Text>
         <View style={styles.divider} />
 
-        {/* Werk */}
+        {/* Werkdetails */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Artwork Details</Text>
 
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Description</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artwork_analysis?.visual_description ||
-                "No Description available."}
+              {analysisResult?.artwork_analysis?.visual_description || "No Description available."}
             </Text>
           </View>
 
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Interpretation</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artwork_analysis?.interpretation ||
-                "No Interpretation available."}
+              {analysisResult?.artwork_analysis?.interpretation || "No Interpretation available."}
             </Text>
           </View>
         </View>
@@ -86,8 +78,7 @@ export default function DetailAnaysisView({
         {/* Künstler */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
-            About{" "}
-            <Text style={styles.artistName}>
+            About <Text style={styles.artistName}>
               {analysisResult?.artist_info?.name || "Unknown Artist"}
             </Text>
           </Text>
@@ -95,16 +86,14 @@ export default function DetailAnaysisView({
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Style</Text>
             <Text style={styles.sub}>
-              {analysisResult?.artist_info?.artistic_style ||
-                "No style information."}
+              {analysisResult?.artist_info?.artistic_style || "No style information."}
             </Text>
           </View>
 
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Biography</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artist_info?.biography ||
-                "No biography available."}
+              {analysisResult?.artist_info?.biography || "No biography available."}
             </Text>
           </View>
         </View>
@@ -117,15 +106,13 @@ export default function DetailAnaysisView({
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Art Movement</Text>
             <Text style={styles.sub}>
-              {analysisResult?.historical_context?.art_movement ||
-                "No Art Movement info."}
+              {analysisResult?.historical_context?.art_movement || "No Art Movement info."}
             </Text>
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Key Traits</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.historical_context?.key_traits ||
-                "No Key Traits info."}
+              {analysisResult?.historical_context?.key_traits || "No Key Traits info."}
             </Text>
           </View>
         </View>
@@ -155,20 +142,16 @@ export default function DetailAnaysisView({
           <TouchableOpacity
             style={styles.audioGuideButton}
             onPress={() =>
-              generateAudio(
-                (url) =>
-                  router.push({
-                    pathname: "/audio-player",
-                    params: {
-                      title:
-                        analysisResult?.artwork_analysis?.title || "Audioguide",
-                      imageUri: capturedImage || "",
-                      audioUri: url,
-                      artistName:
-                        analysisResult?.artist_info?.name || "Unknown Artist",
-                    },
-                  }),
-                artworkId
+              generateAudio((url) =>
+                router.push({
+                  pathname: "/audio-player",
+                  params: {
+                    title: analysisResult?.artwork_analysis?.title || "Audioguide",
+                    imageUri: capturedImage || "",
+                    audioUri: url,
+                    artistName: analysisResult?.artist_info?.name || "Unknown Artist",
+                  },
+                })
               )
             }
             disabled={loading}

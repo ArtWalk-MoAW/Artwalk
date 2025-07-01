@@ -120,8 +120,9 @@ export default function App() {
 
         // ✅ Falls Ergebnis in json.analysis.raw als JSON-String steckt:
         if (json?.analysis?.raw) {
-          const parsed = JSON.parse(json.analysis.raw); // ← das ist dein echtes Analyseobjekt!
-          setAnalysisResult(parsed);
+        const parsed = JSON.parse(json.analysis.raw);
+        parsed.artworkId = json.artworkId; // ✅ hier: die ID vom Backend einfügen
+        setAnalysisResult(parsed);  
         } else {
           throw new Error("Upload-Response is malformed");
         }
@@ -162,14 +163,14 @@ export default function App() {
         </View>
       ) : analysisResult ? (
         <ScrollView>
-          <DetailAnaysisView
-            analysisResult={analysisResult}
-            capturedImage={capturedImage}
-            onBack={() => {
-              setAnalysisResult(null);
-              setCapturedImage(null);
-            }}
-          />
+        <DetailAnaysisView
+          analysisResult={analysisResult}
+          capturedImage={capturedImage}
+          onBack={() => {
+            setAnalysisResult(null);
+            setCapturedImage(null);
+          }}
+        />
         </ScrollView>
       ) : isAnalyzing ? (
         // Ladeanzeige aktiv
