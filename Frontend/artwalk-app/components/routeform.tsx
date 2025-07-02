@@ -17,6 +17,16 @@ const CATEGORIES = [
   "Photorealistic",
   "Urban Intervention",
   "Festival Art",
+  "Animal Motif",
+  "Portrait",
+  "Calligraffiti",
+  "Installation",
+  "Stencil",
+  "Political",
+  "Abstract",
+  "Figurative",
+  "Cartoon Style",
+  "Paste-up",
 ];
 
 const imageMap: Record<string, any> = {
@@ -25,6 +35,16 @@ const imageMap: Record<string, any> = {
   "Photorealistic": require("../assets/styles/Photorealistic.jpg"),
   "Urban Intervention": require("../assets/styles/UrbanIntervention.jpg"),
   "Festival Art": require("../assets/styles/FestivalArt.jpg"),
+  "Animal Motif": require("../assets/styles/AnimalMotif.jpg"),
+  "Portrait": require("../assets/styles/Portrait.jpg"),
+  "Calligraffiti": require("../assets/styles/Calligraffiti.jpg"),
+  "Installation": require("../assets/styles/Installation.jpg"),
+  "Stencil": require("../assets/styles/Stencil.jpg"),
+  "Political": require("../assets/styles/Political.jpeg"),
+  "Abstract": require("../assets/styles/Abstract.jpg"),
+  "Figurative": require("../assets/styles/Figurative.jpg"),
+  "Cartoon Style": require("../assets/styles/CartoonStyle.jpeg"),
+  "Paste-up": require("../assets/styles/Paste-up.jpg"),
 };
 
 export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => void }) {

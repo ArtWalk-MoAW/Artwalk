@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouteForm } from "../hooks/useRouteForm";
 
 export default function RouteResult({
@@ -19,8 +18,6 @@ export default function RouteResult({
   onReset: () => void;
 }) {
   const [backPressed, setBackPressed] = useState(false);
-  const [savePressed, setSavePressed] = useState(false);
-
   const { formData } = useRouteForm();
 
   useEffect(() => {
@@ -41,7 +38,7 @@ export default function RouteResult({
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFFEFC" }}>
-      {/* 🔙 Zurück-Button oben links */}
+      {/* 🔙 Zurück-Button */}
       <TouchableOpacity
         onPress={onReset}
         onPressIn={() => setBackPressed(true)}
@@ -65,27 +62,6 @@ export default function RouteResult({
         </Text>
       </TouchableOpacity>
 
-      {/* 🔖 Bookmark-Button oben rechts */}
-      <TouchableOpacity
-        onPress={() => {}}
-        onPressIn={() => setSavePressed(true)}
-        onPressOut={() => setSavePressed(false)}
-        style={[
-          styles.iconButton,
-          {
-            right: 20,
-            backgroundColor: savePressed ? "#F95636" : "#fff",
-          },
-        ]}
-        activeOpacity={1}
-      >
-        <Ionicons
-          name="bookmark-outline"
-          size={24}
-          color={savePressed ? "#fff" : "#1D0C02"}
-        />
-      </TouchableOpacity>
-
       <MapView
         style={styles.map}
         initialRegion={initialRegion}
@@ -100,7 +76,7 @@ export default function RouteResult({
               latitude: stop.latitude,
               longitude: stop.longitude,
             }}
-            title={stop.artist || "Unbekannt"}
+            title={stop.title}
             description={stop.address}
           />
         ))}
@@ -137,17 +113,14 @@ export default function RouteResult({
         {route.map((stop, i) => (
           <View key={i} style={styles.stopItem}>
             <View style={styles.lineIndicator}>
-              <View style={styles.dot} />
+              <View className="dot" style={styles.dot} />
               {i < route.length - 1 && <View style={styles.verticalLine} />}
             </View>
             <View style={styles.stopCard}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.stopArtist}>{stop.artist || "Unbekannt"}</Text>
+                <Text style={styles.stopArtist}>{stop.title}</Text>
                 <Text style={styles.stopName}>{stop.address}</Text>
               </View>
-              <TouchableOpacity style={styles.arrowButton}>
-                <Text style={styles.arrow}>→</Text>
-              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -236,20 +209,6 @@ const styles = StyleSheet.create({
     fontFamily: "InstrumentSans-Regular",
     color: "#1D0C02",
     fontSize: 14,
-  },
-  arrowButton: {
-    width: 30,
-    height: 30,
-    backgroundColor: "#F95636",
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 10,
-  },
-  arrow: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   iconButton: {
     position: "absolute",

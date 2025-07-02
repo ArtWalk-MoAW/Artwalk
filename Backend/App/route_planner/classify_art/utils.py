@@ -9,22 +9,20 @@ class CrewCompatibleOllama(Ollama):
 
 CATEGORIES = [
     "Mural",
-    "Graffiti",
-    "Stencil",
-    "Paste-up",
-    "Calligraffiti",
-    "3D Art",
-    "Photorealistic",
-    "Abstract",
-    "Figurative",
-    "Political",
-    "Typography",
-    "Urban Intervention",
-    "Festival Art",
-    "Portrait",
-    "Animal Motif",
-    "Cartoon Style",
-    "Installation"
+  "Graffiti",
+  "Photorealistic",
+  "Urban Intervention",
+  "Festival Art",
+  "Animal Motif",
+  "Portrait",
+  "Calligraffiti",
+  "Installation",
+  "Stencil",
+  "Political",
+  "Abstract",
+  "Figurative",
+  "Cartoon Style",
+  "Paste-up"
 ]
 
 SYSTEM_PROMPT = (
