@@ -98,7 +98,7 @@ export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => vo
       <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholder="e.g. Haidhausen" placeholderTextColor="#999" />
 
       <Text style={styles.label}>How long should the trip last?</Text>
-      <TextInput style={styles.input} value={minutes} onChangeText={setMinutes} keyboardType="numeric" placeholder="e.g. 120" placeholderTextColor="#999" />
+      <TextInput style={styles.input} value={minutes} onChangeText={setMinutes} keyboardType="numeric" placeholder="e.g. 30" placeholderTextColor="#999" />
 
       <Text style={styles.label}>How many stops?</Text>
       <TextInput style={styles.input} value={numStops} onChangeText={setNumStops} keyboardType="numeric" placeholder="e.g. 3" placeholderTextColor="#999" />
