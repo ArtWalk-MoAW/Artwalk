@@ -10,9 +10,8 @@ import {
 import Slider from '@react-native-community/slider';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from '@expo/vector-icons';
-
-
 
 type Props = {
   title: string;
@@ -22,16 +21,15 @@ type Props = {
   onBack: () => void;
 };
 
+
 export default function AudioPlayer({ title, imageUri, audioUri, artistName, onBack }: Props) {
   const player = useAudioPlayer({ uri: audioUri });
   const status = useAudioPlayerStatus(player);
 
-  // Debug-Output
   useEffect(() => {
     console.log("🎧 AudioPlayer mounted with URI:", audioUri);
   }, [audioUri]);
 
-  // Autoplay wenn geladen
   useEffect(() => {
     if (status.isLoaded && !status.playing) {
       console.log("▶️ Autoplaying...");
@@ -62,8 +60,11 @@ export default function AudioPlayer({ title, imageUri, audioUri, artistName, onB
 
   return (
     <View style={styles.container}>
+
+      {/* 🎨 Bild */}
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
 
+      {/* 🎧 Player */}
       <View style={styles.playerBox}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.artistName}>{artistName}</Text>
@@ -97,7 +98,6 @@ export default function AudioPlayer({ title, imageUri, audioUri, artistName, onB
             <MaterialIcons name="forward-10" size={40} color="#1D0C02" />
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );
@@ -109,6 +109,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
+    zIndex: 10,
+  },
+  backButton: {
+    borderRadius: 20,
+    borderColor: 'black',
+    width: 40,
+    height: 40,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: width,
@@ -157,33 +175,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1D0C02',
   },
-  playButton: {
-    backgroundColor: '#1D0C02',
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  playButtonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-
   controlsRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  marginTop: 30,
-  width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginTop: 30,
+    width: '100%',
   },
-
   iconButton: {
-  backgroundColor: 'transparent',
-  padding: 16,
-  borderRadius: 50,
-  marginHorizontal: 20,
-},
-
-
-
+    backgroundColor: 'transparent',
+    padding: 16,
+    borderRadius: 50,
+    marginHorizontal: 20,
+  },
 });

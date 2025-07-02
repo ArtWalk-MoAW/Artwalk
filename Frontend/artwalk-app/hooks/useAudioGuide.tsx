@@ -6,7 +6,7 @@ export function useAudioGuide() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function generateAudio(onSuccess?: (url: string) => void) {
+  async function generateAudio(): Promise<string | null> {
     setLoading(true);
     setError(null);
 
@@ -20,10 +20,11 @@ export function useAudioGuide() {
         throw new Error(ttsData.error || '❌ Fehler beim TTS-Service');
       }
 
-      onSuccess?.(ttsData.url);
+      return ttsData.url;
     } catch (e: any) {
       console.error("🚨 Fehler bei Audiogenerierung:", e);
       setError(e.message || "Unbekannter Fehler");
+      return null;
     } finally {
       setLoading(false);
     }

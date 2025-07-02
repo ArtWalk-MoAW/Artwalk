@@ -29,7 +29,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="scanner"
         options={{
-          title: "Art Scanner",
+          title: "ArtWalk Scanner",
           tabBarIcon: ({ color }) => (
             <Ionicons name="camera" color={color} size={24} />
           ),

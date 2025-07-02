@@ -8,7 +8,6 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAudioGuide } from "../hooks/useAudioGuide";
 import { useRouter } from "expo-router";
 
 type Props = {
@@ -23,48 +22,62 @@ export default function DetailAnaysisView({
   onBack,
 }: Props) {
   const router = useRouter();
-  const { loading, error, generateAudio } = useAudioGuide();
+
+  const handleAudioNavigation = () => {
+    router.push({
+      pathname: "/audio-loading",
+      params: {
+        title: analysisResult?.artwork_analysis?.title || "Audioguide",
+        imageUri: capturedImage || "",
+        artistName: analysisResult?.artist_info?.name || "Unknown Artist",
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={28} color="black" />
+        {/* Back */}
+        <TouchableOpacity onPress={onBack} style={styles.iconButton}>
+          <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
+
+        {/* Play */}
         <TouchableOpacity
-          style={styles.saveButton}
-          onPress={() => {
-            /* merken logic */
-          }}
+          onPress={handleAudioNavigation}
+          style={[styles.iconButton, styles.centerIconButton]}
         >
-          <Ionicons name="bookmark-outline" size={28} color="black" />
+          <Ionicons name="play" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* Save */}
+        <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
+          <Ionicons name="bookmark-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
 
-      {/* Bild */}
+      {/* Image */}
       {capturedImage && (
         <Image source={{ uri: capturedImage }} style={styles.imagePreview} />
       )}
 
       <ScrollView>
-        {/* Titel */}
+        {/* Title */}
         <Text style={styles.title}>
           {analysisResult?.artwork_analysis?.title || "No Artwork information."}
         </Text>
         <View style={styles.divider} />
 
-        {/* Werkdetails */}
+        {/* Artwork Details */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Artwork Details</Text>
-
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Description</Text>
             <Text style={styles.infotext}>
               {analysisResult?.artwork_analysis?.visual_description || "No Description available."}
             </Text>
           </View>
-
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Interpretation</Text>
             <Text style={styles.infotext}>
@@ -75,21 +88,20 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Künstler */}
+        {/* Artist */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
-            About <Text style={styles.artistName}>
+            About{" "}
+            <Text style={styles.artistName}>
               {analysisResult?.artist_info?.name || "Unknown Artist"}
             </Text>
           </Text>
-
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Style</Text>
             <Text style={styles.sub}>
               {analysisResult?.artist_info?.artistic_style || "No style information."}
             </Text>
           </View>
-
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Biography</Text>
             <Text style={styles.infotext}>
@@ -100,7 +112,7 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Historischer Kontext */}
+        {/* Historical Context */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Historical Context</Text>
           <View style={styles.infoBlock}>
@@ -119,7 +131,7 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Ähnliche Werke */}
+        {/* Similar Artworks */}
         <View style={[styles.sectionContainer, styles.sectionBox]}>
           <Text style={styles.sectionTitle}>Similar Artworks</Text>
           {Array.isArray(analysisResult?.similar_artworks) ? (
@@ -135,33 +147,6 @@ export default function DetailAnaysisView({
           ) : (
             <Text style={styles.infotext}>No similar artworks found.</Text>
           )}
-        </View>
-
-        {/* 🎧 Audioguide */}
-        <View style={styles.audioGuideContainer}>
-          <TouchableOpacity
-            style={styles.audioGuideButton}
-            onPress={() =>
-              generateAudio((url) =>
-                router.push({
-                  pathname: "/audio-player",
-                  params: {
-                    title: analysisResult?.artwork_analysis?.title || "Audioguide",
-                    imageUri: capturedImage || "",
-                    audioUri: url,
-                    artistName: analysisResult?.artist_info?.name || "Unknown Artist",
-                  },
-                })
-              )
-            }
-            disabled={loading}
-          >
-            <Text style={styles.audioGuideButtonText}>
-              {loading ? "Loading your audio guide..." : "Start Audio Tour"}
-            </Text>
-          </TouchableOpacity>
-
-          {error && <Text style={styles.errorText}>Fehler: {error}</Text>}
         </View>
       </ScrollView>
     </View>
@@ -193,6 +178,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: "center",
     alignItems: "center",
+  },
+  centerIconButton: {
+    marginHorizontal: 12,
   },
   title: {
     fontSize: 40,
@@ -242,12 +230,6 @@ const styles = StyleSheet.create({
   infoBlock: {
     marginBottom: 16,
   },
-  section: {
-    fontSize: 22,
-    fontWeight: "600",
-    fontFamily: "InstrumentSans-Bold",
-    marginBottom: 8,
-  },
   sectionBox: {
     padding: 12,
     backgroundColor: "#FFFEFC",
@@ -263,46 +245,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#1D0C02",
     marginVertical: 16,
     borderRadius: 1,
-  },
-  backButton: {
-    zIndex: 1,
-    borderRadius: 20,
-    borderColor: "black",
-    width: 40,
-    height: 40,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  saveButton: {
-    zIndex: 1,
-    borderRadius: 20,
-    borderColor: "black",
-    width: 40,
-    height: 40,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  audioGuideContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 40,
-    alignItems: "center",
-  },
-  audioGuideButton: {
-    backgroundColor: "#1D0C02",
-    paddingVertical: 14,
-    paddingHorizontal: 80,
-    borderRadius: 10,
-  },
-  audioGuideButtonText: {
-    color: "#FFFEFC",
-    fontSize: 17,
-    fontFamily: "InstrumentSans-Bold",
-  },
-  errorText: {
-    marginTop: 10,
-    color: "red",
-    fontFamily: "InstrumentSans-Regular",
   },
 });

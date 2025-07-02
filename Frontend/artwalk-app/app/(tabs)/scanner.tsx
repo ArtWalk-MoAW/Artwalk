@@ -10,10 +10,9 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
 import DetailAnaysisView from "@/components/DetailAnaysisView";
-
 import * as FileSystem from "expo-file-system";
 
 export default function App() {
@@ -38,7 +37,7 @@ export default function App() {
           throw new Error("Fallback JSON response is empty or malformed");
         }
 
-        setAnalysisResult(json); // 👈 Direkt, da keine .analysis enthalten ist
+        setAnalysisResult(json);
         setIsAnalyzing(false);
       } else {
         console.error("Fallback GET fehlgeschlagen:", response.status);
@@ -59,12 +58,10 @@ export default function App() {
   }, [analysisResult]);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
@@ -84,6 +81,7 @@ export default function App() {
   };
 
   const discardImage = () => setCapturedImage(null);
+
   const keepImage = async () => {
     if (!capturedImage) return;
 
@@ -114,27 +112,38 @@ export default function App() {
         }
       );
 
-      if (response.ok) {
-        const json = await response.json();
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn("POST fehlgeschlagen:", response.status, errorText);
+        await fetchFallback();
+        return;
+      }
+
+      let json: any;
+      try {
+        json = await response.json();
         console.log("Upload-Response:", json);
+      } catch (e) {
+        console.error("❌ Fehler beim Parsen der JSON-Antwort:", e);
+        await fetchFallback();
+        return;
+      }
 
-        // ✅ Falls Ergebnis in json.analysis.raw als JSON-String steckt:
-        if (json?.analysis?.raw) {
-        const parsed = JSON.parse(json.analysis.raw);
-        parsed.artworkId = json.artworkId; // ✅ hier: die ID vom Backend einfügen
-        setAnalysisResult(parsed);  
-        } else {
-          throw new Error("Upload-Response is malformed");
+      if (json?.analysis?.raw) {
+        try {
+          const parsed = JSON.parse(json.analysis.raw);
+          parsed.artworkId = json.artworkId;
+          setAnalysisResult(parsed);
+        } catch (parseError) {
+          console.error("❌ Fehler beim Parsen von analysis.raw:", parseError);
+          await fetchFallback();
         }
-
-        setIsAnalyzing(false);
       } else {
-        console.warn(
-          "POST fehlgeschlagen, versuche Fallback GET:",
-          response.status
-        );
+        console.warn("❌ JSON hat kein analysis.raw:", json);
         await fetchFallback();
       }
+
+      setIsAnalyzing(false);
     } catch (error) {
       console.error("Fehler beim POST-Upload:", error);
       await fetchFallback();
@@ -150,7 +159,7 @@ export default function App() {
       {hasError ? (
         <View>
           <Text>Scan failed</Text>
-          <Text> The image could not be analyzed. Please try again.</Text>
+          <Text>The image could not be analyzed. Please try again.</Text>
           <TouchableOpacity
             onPress={() => {
               setHasError(false);
@@ -163,27 +172,23 @@ export default function App() {
         </View>
       ) : analysisResult ? (
         <ScrollView>
-        <DetailAnaysisView
-          analysisResult={analysisResult}
-          capturedImage={capturedImage}
-          onBack={() => {
-            setAnalysisResult(null);
-            setCapturedImage(null);
-          }}
-        />
+          <DetailAnaysisView
+            analysisResult={analysisResult}
+            capturedImage={capturedImage}
+            onBack={() => {
+              setAnalysisResult(null);
+              setCapturedImage(null);
+            }}
+          />
         </ScrollView>
       ) : isAnalyzing ? (
-        // Ladeanzeige aktiv
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={{ marginBottom: 20, fontSize: 18 }}>
-            Analyzing image...
-          </Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color="#DB4F00" />
+          <Text style={{margin: 20, fontSize: 18 }}>
+            ArtWalk is analyzing your discovery…
+          </Text>
         </View>
       ) : capturedImage ? (
-        // Bildvorschau & Buttons
         <View style={styles.previewContainer}>
           <Image source={{ uri: capturedImage }} style={styles.preview} />
           <View style={styles.buttonRow}>
@@ -196,7 +201,6 @@ export default function App() {
           </View>
         </View>
       ) : (
-        // Kameraansicht
         <>
           <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
           <View style={styles.buttonContainer}>
@@ -240,7 +244,6 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
-
   button: {
     backgroundColor: "#DB4F00",
     paddingVertical: 12,
