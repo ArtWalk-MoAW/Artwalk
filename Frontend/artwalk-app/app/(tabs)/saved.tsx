@@ -11,7 +11,7 @@ type Artwork = {
   img: string;
   latitude: number;
   longitude: number;
-  type: 'map' | 'scanned' | 'route';
+  type: 'map' | 'scanned';
 };
 
 export default function SavedArtworksScreen() {

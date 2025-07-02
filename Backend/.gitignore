@@ -25,6 +25,7 @@ poetry.lock
 
 # Docker logs
 *.log
+.env
 
 # ----------------------------
 # ✍️ Editor backups

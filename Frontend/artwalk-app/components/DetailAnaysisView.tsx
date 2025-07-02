@@ -6,11 +6,10 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  Alert
+  Alert,
 } from "react-native";
 
 import { useRouter } from "expo-router";
-  
 
 import { Ionicons } from "@expo/vector-icons";
 import { saveArtworkAnalyse } from "../services/artworkService";
@@ -27,6 +26,26 @@ export default function DetailAnaysisView({
   onBack,
 }: Props) {
   const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      const saveData = {
+        ...analysisResult,
+        img: capturedImage, // <--- wichtig!
+        type: "scanned", // falls du das unterscheiden willst
+      };
+
+      const result = await saveArtworkAnalyse(saveData);
+      setIsSaved(true);
+      console.log("Gespeichert mit ID:", result.id);
+      Alert.alert("Saved!", `ID: ${result.id}`);
+    } catch (error) {
+      console.error("Fehler beim Speichern:", error);
+      Alert.alert("Error", "Failed to save the artwork. Please try again.");
+      setIsSaved(false);
+    }
+  };
 
   const handleAudioNavigation = () => {
     router.push({
@@ -57,8 +76,12 @@ export default function DetailAnaysisView({
         </TouchableOpacity>
 
         {/* Save */}
-        <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
-          <Ionicons name="bookmark-outline" size={24} color="black" />
+        <TouchableOpacity style={styles.iconButton} onPress={handleSave}>
+          <Ionicons
+            name={isSaved ? "bookmark" : "bookmark-outline"}
+            size={24}
+            color="black"
+          />
         </TouchableOpacity>
       </View>
 
@@ -80,13 +103,15 @@ export default function DetailAnaysisView({
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Description</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artwork_analysis?.visual_description || "No Description available."}
+              {analysisResult?.artwork_analysis?.visual_description ||
+                "No Description available."}
             </Text>
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Interpretation</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artwork_analysis?.interpretation || "No Interpretation available."}
+              {analysisResult?.artwork_analysis?.interpretation ||
+                "No Interpretation available."}
             </Text>
           </View>
         </View>
@@ -104,13 +129,15 @@ export default function DetailAnaysisView({
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Style</Text>
             <Text style={styles.sub}>
-              {analysisResult?.artist_info?.artistic_style || "No style information."}
+              {analysisResult?.artist_info?.artistic_style ||
+                "No style information."}
             </Text>
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Biography</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.artist_info?.biography || "No biography available."}
+              {analysisResult?.artist_info?.biography ||
+                "No biography available."}
             </Text>
           </View>
         </View>
@@ -123,13 +150,15 @@ export default function DetailAnaysisView({
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Art Movement</Text>
             <Text style={styles.sub}>
-              {analysisResult?.historical_context?.art_movement || "No Art Movement info."}
+              {analysisResult?.historical_context?.art_movement ||
+                "No Art Movement info."}
             </Text>
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Key Traits</Text>
             <Text style={styles.infotext}>
-              {analysisResult?.historical_context?.key_traits || "No Key Traits info."}
+              {analysisResult?.historical_context?.key_traits ||
+                "No Key Traits info."}
             </Text>
           </View>
         </View>

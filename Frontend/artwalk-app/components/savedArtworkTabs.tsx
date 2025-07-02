@@ -31,8 +31,7 @@ export default function SavedArtworkTabs() {
 
   const [routes] = useState([
     { key: "map", title: "Map Art" },
-    { key: "scanned", title: "Scanned Art" },
-    { key: "routes", title: "Routes" },
+    { key: "scanned", title: "Scanned Art" }
   ]);
 
   const loadData = async () => {
