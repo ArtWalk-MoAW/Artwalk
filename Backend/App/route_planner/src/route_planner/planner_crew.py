@@ -1,10 +1,12 @@
 import json
 from itertools import combinations
+from collections import defaultdict
+from pathlib import Path
 from crewai import Crew, Task
-from App.route_planner.src.route_planner.route_agent import RouteAgent, ClassifyAgent
 from langchain_community.llms.ollama import Ollama
-from App.route_planner.classify_art.utils import CrewCompatibleOllama
 
+from App.route_planner.src.route_planner.route_agent import RouteAgent, ClassifyAgent
+from App.route_planner.classify_art.utils import CrewCompatibleOllama
 from App.route_planner.src.route_planner.utils import (
     haversine,
     get_district_by_coords,
@@ -12,39 +14,28 @@ from App.route_planner.src.route_planner.utils import (
     load_district_data,
     match_district_name,
 )
-from collections import defaultdict
-from pathlib import Path
-
 
 llm = CrewCompatibleOllama(
     model="llama3",
     base_url="http://host.docker.internal:11434"
 )
 
-
 def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferred_styles: list[str], with_description_only: bool = True) -> list[dict]:
-    print("🔹 Starte plan_route")
+    print("Starte plan_route")
     known_districts = load_district_data().keys()
     selected_district = match_district_name(selected_district, known_districts)
-    print(f"🔸 Gematchter Bezirk: {selected_district}")
-
+    print(f"Gematchter Bezirk: {selected_district}")
     if not selected_district:
-        print("❌ Kein gültiger Bezirk gefunden.")
+        print("Kein gültiger Bezirk gefunden.")
         return []
 
-    data_dir = Path(__file__).parents[2] / "data"
-    with open(data_dir / "munich_example_with_image_url.json", "r") as f:
+    backend_root = Path(__file__).resolve().parents[4]
+    json_path = backend_root / "data" / "munich_classified.json"
+    with open(json_path, "r", encoding="utf-8") as f:
         artworks = json.load(f)
-    print(f"📦 Anzahl geladener Werke: {len(artworks)}")
 
     if with_description_only:
         artworks = [a for a in artworks if a.get("description") and len(a["description"].strip()) > 0]
-        print(f"✂️ Gefiltert nach Beschreibung: {len(artworks)} Werke übrig")
-
-    print("🔍 Starte Klassifikation")
-    classifier = ClassifyAgent()
-    classifier.enrich_styles(artworks)
-    print("✅ Klassifikation abgeschlossen")
 
     for art in artworks:
         lat = art.get("latitude")
@@ -52,33 +43,42 @@ def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferr
         art["district"] = get_district_by_coords(lat, lon) if lat and lon else "Unbekannt"
 
     district_only = [a for a in artworks if a["district"] == selected_district]
-    print(f"📍 Werke im ausgewählten Bezirk ({selected_district}): {len(district_only)}")
-
+    print(f"Werke im Bezirk {selected_district}: {len(district_only)}")
     if not district_only:
-        print("❌ Keine Werke im Bezirk gefunden.")
+        print("Keine Werke im Bezirk gefunden.")
         return []
 
     start_coords = (district_only[0]["latitude"], district_only[0]["longitude"])
     max_km = max_minutes * 0.08
-    print(f"🧭 Start bei {start_coords}, Maximaldistanz: {max_km:.2f} km")
+    print(f"Start: {start_coords}, Max-Kilometer: {max_km:.2f}")
 
     for art in artworks:
-        art["distance"] = haversine(start_coords[0], start_coords[1], art["latitude"], art["longitude"])
-    reachable = [a for a in artworks if a["distance"] <= max_km and a.get("latitude") and a.get("longitude")]
-    print(f"🚶‍♂️ Erreichbare Werke: {len(reachable)}")
+        if art.get("latitude") and art.get("longitude"):
+            art["distance"] = haversine(start_coords[0], start_coords[1], art["latitude"], art["longitude"])
 
-    if len([a for a in reachable if a["district"] == selected_district]) < 6:
-        print("🔄 Zu wenig Werke im Bezirk – lade angrenzende Bezirke")
+    reachable = [a for a in artworks if a.get("distance", 9999) <= max_km]
+
+    needs_classification = [a for a in reachable if not a.get("style")]
+    if needs_classification:
+        print(f"Klassifiziere {len(needs_classification)} relevante ungeklassifizierte Werke")
+        classifier = ClassifyAgent()
+        classifier.enrich_styles(needs_classification)
+
+    reachable = [a for a in reachable if any(s in a.get("style", []) for s in preferred_styles)]
+
+    district_reachable = [a for a in reachable if a["district"] == selected_district]
+    print(f"Passende Werke im Bezirk {selected_district}: {len(district_reachable)}")
+
+    if len(district_reachable) < num_stops:
+        print(f"Nur {len(district_reachable)} passende Werke im Bezirk {selected_district} gefunden.")
+        print("Es werden angrenzende Bezirke einbezogen, um die Route aufzufüllen.")
         neighbors = find_neighboring_districts(selected_district)
-        print(f"🧩 Nachbarbezirke: {neighbors}")
-        for neighbor in neighbors:
-            for art in artworks:
-                if art["district"] == neighbor and art not in reachable:
-                    art["distance"] = haversine(start_coords[0], start_coords[1], art["latitude"], art["longitude"])
-                    if art["distance"] <= max_km:
-                        reachable.append(art)
-        print(f"🔁 Werke nach Erweiterung: {len(reachable)}")
+        neighbor_reachable = [a for a in reachable if a["district"] in neighbors]
+        reachable = district_reachable + neighbor_reachable
+    else:
+        reachable = district_reachable
 
+    # Duplikate entfernen
     unique_coords = set()
     filtered = []
     for art in reachable:
@@ -86,17 +86,15 @@ def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferr
         if coords not in unique_coords:
             filtered.append(art)
             unique_coords.add(coords)
-    print(f"📌 Einzigartige Standorte: {len(filtered)}")
-
-    filtered = [a for a in filtered if any(s in a.get("style", []) for s in preferred_styles)]
-    print(f"🎨 Gefiltert nach Stil: {len(filtered)} übrig")
+    print(f"Einzigartige Standorte: {len(filtered)}")
 
     if len(filtered) < num_stops:
-        print("❌ Nicht genug Werke mit gewünschtem Stil gefunden.")
+        print("Nicht genug passende Werke gefunden.")
         return []
 
+    #Bezirkspriorisierung
     best_combo = None
-    best_total = 0
+    best_score = -1
     print(f"🔄 Suche beste Kombination aus {len(filtered)} Werken")
     for combo in combinations(filtered, num_stops):
         total = 0
@@ -108,15 +106,18 @@ def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferr
             if total > max_km:
                 valid = False
                 break
-        if valid and total > best_total:
-            best_total = total
-            best_combo = combo
+        if valid:
+            district_hits = sum(1 for a in combo if a["district"] == selected_district)
+            score = district_hits * 100 - total  # Priorisiere mehr Werke aus dem Bezirk
+            if score > best_score:
+                best_score = score
+                best_combo = combo
 
     if not best_combo:
-        print("❌ Keine gültige Route gefunden.")
+        print("Keine gültige Route gefunden.")
         return []
 
-    print(f"✅ Beste Route mit {num_stops} Stationen und {best_total:.2f} km Gesamtstrecke")
+    print(f"Beste Route: {num_stops} Stops, Distanz: {total:.2f} km")
 
     artwork_info = "\n".join([
         f"- {a['title']} | {a['address']} (Bezirk: {a['district']}) (Lat: {a['latitude']}, Lon: {a['longitude']})"
@@ -140,8 +141,6 @@ Gib die gewählte Route in sinnvoller Reihenfolge aus – jeweils mit Titel, kur
     )
 
     crew = Crew(agents=[agent], tasks=[task], verbose=True)
-    print("🚀 Starte Crew")
     _ = crew.kickoff()
-    print("✅ Crew abgeschlossen")
 
     return list(best_combo)
