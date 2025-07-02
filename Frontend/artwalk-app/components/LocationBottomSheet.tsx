@@ -9,6 +9,7 @@ import { Text, StyleSheet, Image, ScrollView, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import SaveArtwork from './saveArtwork';
 
+
 export type LocationData = {
   title: string;
   address: string;

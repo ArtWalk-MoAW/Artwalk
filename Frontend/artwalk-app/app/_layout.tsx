@@ -31,72 +31,73 @@ export default function Layout() {
   }
 
   return (
-    <Stack>
-      {/* Tabs ohne Header */}
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack>
+        {/* Tabs ohne Header */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-      {/* Audio Player mit eigenem Header */}
-      <Stack.Screen
-        name="audio-player"
-        options={{
-          header: () => (
-            <View
-              style={{
-                backgroundColor: '#FFFEFC',
-                paddingTop: 50,
-                paddingBottom: 12,
-                borderBottomWidth: 1,
-                borderBottomColor: '#1D0C02',
-                justifyContent: 'center',
-                height: 100,
-              }}
-            >
+        {/* Audio Player mit eigenem Header */}
+        <Stack.Screen
+          name="audio-player"
+          options={{
+            header: () => (
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  backgroundColor: '#FFFEFC',
+                  paddingTop: 50,
+                  paddingBottom: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#1D0C02',
                   justifyContent: 'center',
-                  position: 'relative',
-                  height: 40,
+                  height: 100,
                 }}
               >
-                {/* Zurückbutton */}
-                <TouchableOpacity
-                  onPress={() => {
-                    if (router.canGoBack()) {
-                      router.back();
-                    } else {
-                      router.replace("/(tabs)");
-                    }
-                  }}
+                <View
                   style={{
-                    position: 'absolute',
-                    left: 16,
-                    borderRadius: 20,
-                    borderWidth: 2,
-                    borderColor: 'black',
-                    width: 40,
-                    height: 40,
-                    justifyContent: 'center',
+                    flexDirection: 'row',
                     alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    height: 40,
                   }}
                 >
-                  <Ionicons name="arrow-back" size={24} color="black" />
-                </TouchableOpacity>
+                  {/* Zurückbutton */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (router.canGoBack()) {
+                        router.back();
+                      } else {
+                        router.replace("/(tabs)");
+                      }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      left: 16,
+                      borderRadius: 20,
+                      borderWidth: 2,
+                      borderColor: 'black',
+                      width: 40,
+                      height: 40,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                  </TouchableOpacity>
 
-                {/* Titel */}
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                    color: '#1D0C02',
-                    fontFamily: 'InstrumentSans-Bold',
-                  }}
-                >
-                  Audio Guide
-                </Text>
+                  {/* Titel */}
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#1D0C02',
+                      fontFamily: 'InstrumentSans-Bold',
+                    }}
+                  >
+                    Audio Guide
+                  </Text>
+                </View>
               </View>
-            </View>
           ),
         }}
       />
@@ -107,5 +108,6 @@ export default function Layout() {
         options={{ headerShown: false }}
       />
     </Stack>
+    </GestureHandlerRootView>
   );
 }
