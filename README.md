@@ -71,7 +71,7 @@ npx expo start
 # Build backend
 cd Backend
 poetry install
-poerty shell
+poetry shell
 
 cd ..
 # install docker app  through the download on this website
