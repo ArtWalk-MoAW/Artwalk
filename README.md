@@ -8,7 +8,7 @@
 
 ### 🎯 Image Recognition & Artwork Identification
 - Users can take or upload a photo of an artwork
-*Note: Unfortunatley ollama only recognizes very popular artworks Like "Mona Lisa" or "Starry Night"*
+- *Note: Unfortunatley ollama only recognizes very popular artworks Like "Mona Lisa" or "Starry Night"*
 - The app uses AI (LLava + CrewAI agents) to analyze and recognize the artwork
 - Creates a JSOn File with the Artwork Title, Artist Name and a short description
 
@@ -21,7 +21,7 @@
 
 ### 🗺️ Art Route Planning
 - Integrated map shows artworks across the city
-*Note: due to the scope of the project, we have decided to only show Munich's artworks on the map*
+- *Note: due to the scope of the project, we have decided to only show Munich's artworks on the map*
 - Users can plan personalized routes based on interest, distance, or art style
 - Suggested thematic routes based on the users preferences
 
