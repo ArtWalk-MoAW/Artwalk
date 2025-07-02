@@ -55,15 +55,13 @@ https://streetartcities.com/open-data
 
 ```bash
 # Start frontend
-cd Frontend
+cd Frontend/artwalk-app
 npm install
-npm install expo-location
 
 # enter your IP Adress into the .env.example file and delete ".example"
 # you can find out your Ip Adress via this command:
 ipconfig getifaddr en0
 
-cd artwalk-app
 npx expo start
 # Expo Go app Installieren
 # Scan QR code with the Kamera of your phone
@@ -72,6 +70,11 @@ npx expo start
 cd Backend
 poetry install
 poetry shell
+
+#in Backend/App:
+# enter your IP Adress into the .env.example file and delete ".example"
+# you can find out your Ip Adress via this command:
+ipconfig getifaddr en0
 
 cd ..
 # install docker app  through the download on this website
@@ -98,6 +101,11 @@ ollama list
 # install LiteLLM
 cd Backend
 pip install litellm
+
+#in tts_service:
+# enter your IP Adress into the .env.example file and delete ".example"
+# you can find out your Ip Adress via this command:
+ipconfig getifaddr en0
 
 `
 ‼️IMPORTANT: Make sure your Python Version is below 3.13 or >= 3.10‼️
