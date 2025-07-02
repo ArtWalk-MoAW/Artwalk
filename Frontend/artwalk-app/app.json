@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "artwalkapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -35,11 +34,7 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-font",{ "fonts":
-        ["./assets/fonts/InstrumentSans-Regular.otf",
-        "./assets/fonts/InstrumentSans-Bold.otf",
-        "./assets/fonts/InstrumentSerif-Regular.ttf"]
-      }]
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true
