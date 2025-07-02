@@ -42,6 +42,7 @@
 | **Frontend**        | React Native + Expo                  |
 | **Backend**         | Python (FastAPI), CrewAI, Ollama     |
 | **Image Analysis**  | LLava via CrewAI agents              |
+| **Detail View**     | LLama3 via CrewAI agents             |
 | **Audio Output**    | TTS, Llama3 via CrewAI agents        |
 | **Routes**          | LLama3 via CrewAI agents             |
 
