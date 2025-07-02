@@ -1,0 +1,84 @@
+# ====================================
+# 🔁 General
+# ====================================
+.DS_Store
+*.log
+*.tmp
+*.swp
+*.bak
+.expo
+.vscode
+
+# ====================================
+# 🔐 Environment / Config
+# ====================================
+.env
+.env.local
+.env.*.local
+
+# ====================================
+# 🐍 Python (Backend + TTS)
+# ====================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenvs
+venv/
+.venv/
+
+# Poetry
+**/poetry.lock
+**/Pipfile.lock
+
+# Python packaging
+*.egg-info/
+build/
+dist/
+
+# Python test/coverage
+.coverage
+.pytest_cache/
+htmlcov/
+.cache/
+
+# ====================================
+# 🐢 Node (Frontend)
+# ====================================
+**/node_modules/
+
+# Expo / React Native
+**/.expo/
+**/dist/
+**/web-build/
+**/expo-env.d.ts
+**/.expo-shared/
+
+# Typescript build info
+*.tsbuildinfo
+
+# Metro cache
+**/.metro-health-check*
+
+# React Native native
+**/.kotlin/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# NPM/Yarn debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# ====================================
+# 💬 Editor/IDE
+# ====================================
+.idea/
+.vscode/
+*.iml
+*.sublime-project
+*.sublime-workspace

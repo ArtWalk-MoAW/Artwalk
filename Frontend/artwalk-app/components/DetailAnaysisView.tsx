@@ -30,13 +30,11 @@ export default function DetailAnaysisView({
 
   const handleSave = async () => {
     try {
-      const saveData = {
+      const payload = {
         ...analysisResult,
-        img: capturedImage, // <--- wichtig!
-        type: "scanned", // falls du das unterscheiden willst
+        captured_image: capturedImage, // ✅ Bild mit abspeichern
       };
-
-      const result = await saveArtworkAnalyse(saveData);
+      const result = await saveArtworkAnalyse(payload);
       setIsSaved(true);
       console.log("Gespeichert mit ID:", result.id);
       Alert.alert("Saved!", `ID: ${result.id}`);
@@ -107,6 +105,7 @@ export default function DetailAnaysisView({
                 "No Description available."}
             </Text>
           </View>
+          
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Interpretation</Text>
             <Text style={styles.infotext}>
