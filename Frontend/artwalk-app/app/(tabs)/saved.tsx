@@ -43,7 +43,6 @@ export default function SavedArtworksScreen() {
     }
   };
 
-  // Lädt neu bei jedem Tab-Fokus
   useFocusEffect(
     useCallback(() => {
       fetchArtworks();

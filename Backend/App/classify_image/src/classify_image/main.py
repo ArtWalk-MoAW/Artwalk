@@ -1,13 +1,10 @@
-#!/usr/bin/env python
 import sys
 import warnings
 import os
 import json
 from datetime import datetime
-
 from classify_image.src.classify_image.crew import ClassifyImage
 import traceback
-
 from classify_image.src.classify_image.tools.llava_tool import LLavaTool
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
@@ -86,10 +83,8 @@ def run_crew_on_image(image_path: str):
     Run the crew on a specific image and save the output to a JSON file.
     """
     try:
-        # 1. Initialisiere das Tool
         llava_tool = LLavaTool()
 
-        # 2. Bild analysieren lassen
         print(f"🖼 Analysiere Bild: {image_path}")
         image_description = llava_tool.run(
             image_path=image_path,
@@ -97,23 +92,20 @@ def run_crew_on_image(image_path: str):
         )
         print("✅ Bildbeschreibung:", image_description)
 
-        # 3. Inputs vorbereiten
         inputs = {
             "image_description": image_description,
             "topic": "Public Artworks",
             "current_year": str(datetime.now().year)
         }
 
-        # 4. Crew instanziieren und starten
         crew_instance = ClassifyImage()
         crew = crew_instance.crew()
         crew.kickoff(inputs=inputs)
 
-        # 5. Ausgabe des Refinement Tasks abrufen
         refine_task = crew_instance.refine_description()
         result_text = refine_task.output.raw
 
-        # 6. JSON validieren und speichern
+        
         try:
             cleaned_text = extract_json_from_response(result_text)
             result_json = json.loads(cleaned_text)

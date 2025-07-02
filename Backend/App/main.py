@@ -17,16 +17,13 @@ from detail_agent.src.detail_agent.main import run_detail_page
 from App.route_planner.src.route_planner.planner_crew import plan_route
 import uuid
 
-# 🔁 .env laden
 load_dotenv()
 print("✅ Backend nutzt IP:", os.getenv("EXPO_PUBLIC_LOCAL_BASE_IP"))
 
-# 📁 Verzeichnisse vorbereiten
 os.makedirs("/app/shared-data/audio", exist_ok=True)
 
 app = FastAPI(title="ArtWalk Mini API")
 
-# 🌍 CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,7 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 📦 Models
 class RouteRequest(BaseModel):
     district: str
     max_minutes: int
@@ -65,12 +61,10 @@ class ArtJsonInput(BaseModel):
     historical_context: dict
     similar_artworks: list
 
-# 📍 Test
 @app.get("/artwalk/ping", tags=["Test"])
 def ping():
     return {"message": "ArtWalk Agent is alive!"}
 
-# 📤 Upload, Analyse, Story
 @app.post("/upload")
 async def upload_image(image: UploadFile = File(...)):
     os.makedirs("uploads", exist_ok=True)
@@ -78,7 +72,7 @@ async def upload_image(image: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    # Klassifikation + Detailanalyse
+    # classify the image using the crew
     result_json = run_crew_on_image(file_path)
     detailinfo_result = run_detail_page(
         artist=result_json["artist"],
@@ -86,7 +80,6 @@ async def upload_image(image: UploadFile = File(...)):
         description=result_json["description"]
     )
 
-    # 🔁 Sicher aus .raw laden (darin ist der vollständige Titel)
     if hasattr(detailinfo_result, "raw") and detailinfo_result.raw:
         try:
             detailinfo_result_dict = json.loads(detailinfo_result.raw)
@@ -96,7 +89,6 @@ async def upload_image(image: UploadFile = File(...)):
     else:
         return JSONResponse(content={"error": "❌ Kein gültiges Analyseobjekt erhalten."}, status_code=500)
 
-    # 🆔 Titel extrahieren
     title = detailinfo_result_dict.get("artwork_analysis", {}).get("title", "").strip()
     print("🎨 Titel im JSON:", title)
 
@@ -106,7 +98,6 @@ async def upload_image(image: UploadFile = File(...)):
             status_code=400
         )
 
-    # 🎯 artworkId generieren
     artwork_id = (
         title.lower()
         .replace(" ", "_")
@@ -118,12 +109,11 @@ async def upload_image(image: UploadFile = File(...)):
     )
     detailinfo_result_dict["artworkId"] = artwork_id
 
-    # 💾 Letzten Analysebericht speichern
     final_report_path = Path("/app/final_art_report.json")
     with final_report_path.open("w", encoding="utf-8") as f:
         json.dump(detailinfo_result_dict, f, indent=2, ensure_ascii=False)
 
-    # 🧠 Story erzeugen
+    # Storyaudio Agent
     story_result = run_story_audio(detailinfo_result_dict)
     story_result["artworkId"] = artwork_id
 
@@ -133,7 +123,6 @@ async def upload_image(image: UploadFile = File(...)):
         "storyText": story_result["storyText"]
     }
 
-# 🔉 TTS: Text → MP3
 @app.post("/send-to-tts")
 def send_story_to_tts_direct():
     story_path = Path("/app/shared-data/story_output.json")
@@ -198,7 +187,6 @@ def send_story_to_tts_direct():
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
-# 📄 Letzter Analysebericht
 @app.get("/get-Artreport")
 def get_details_art():
     path = Path("/app/final_art_report.json")
@@ -210,7 +198,6 @@ def get_details_art():
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-# 🧠 Route Planner
 @app.post("/route")
 def generate_route(request: RouteRequest):
     result = plan_route(
@@ -222,30 +209,13 @@ def generate_route(request: RouteRequest):
     )
     return {"route": result}
 
-# 🖼️ Ausstellungen
 @app.get("/get-exhibitions")
 def get_exhibitions():
     file_path = "/app/data/munich_example_with_image_url.json"
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-# 🎧 MP3-Dateien ausliefern
 app.mount("/audio", StaticFiles(directory="/app/shared-data/audio"), name="audio")
-#@app.get("/get-Artreport")
-#def get_details_art():
-#    path = Path("/app/final_art_report.json")
-#    
-#    if not path.exists():
-#        return JSONResponse(content={"error": "File not found"}, status_code=404)
-#    
-#    try:
-#        with path.open("r", encoding="utf-8") as f:
-#            data = json.load(f)
-#        return JSONResponse(content=data, status_code=200)
-#    except json.JSONDecodeError:
-#        return JSONResponse(content={"error": "Invalid JSON format in file"}, status_code=500)
-#    except Exception as e:
-#        return JSONResponse(content={"error": str(e)}, status_code=500)
     
 
 DATA_FILE = "/app/data/savedArtwork.json"

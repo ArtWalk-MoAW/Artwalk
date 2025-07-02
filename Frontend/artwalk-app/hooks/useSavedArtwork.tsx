@@ -6,7 +6,7 @@ export const useSavedArtwork = (
   location: string,
   description: string,
   img: string,
-  type: 'map' | 'scanned' | 'route' // Added type parameter
+  type: 'map' | 'scanned' | 'route' 
 ) => {
   const [isSaved, setIsSaved] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);

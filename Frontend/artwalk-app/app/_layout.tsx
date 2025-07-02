@@ -33,10 +33,8 @@ export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
-        {/* Tabs ohne Header */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        {/* Audio Player mit eigenem Header */}
         <Stack.Screen
           name="audio-player"
           options={{
@@ -61,7 +59,6 @@ export default function Layout() {
                     height: 40,
                   }}
                 >
-                  {/* Zurückbutton */}
                   <TouchableOpacity
                     onPress={() => {
                       if (router.canGoBack()) {
@@ -85,7 +82,6 @@ export default function Layout() {
                     <Ionicons name="arrow-back" size={24} color="black" />
                   </TouchableOpacity>
 
-                  {/* Titel */}
                   <Text
                     style={{
                       fontSize: 20,
@@ -102,7 +98,6 @@ export default function Layout() {
         }}
       />
 
-      {/* Audio-Loading ohne Header */}
       <Stack.Screen
         name="audio-loading"
         options={{ headerShown: false }}

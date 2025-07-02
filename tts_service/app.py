@@ -9,7 +9,7 @@ tts = TTS("tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=False)
 def generate_audio():
     data = request.json
     text = data.get("text")
-    artwork_id = data.get("artworkId")  # <- wichtig!
+    artwork_id = data.get("artworkId")  
 
     if not text or not artwork_id:
         return jsonify({"error": "Text oder artworkId fehlt"}), 400
@@ -24,7 +24,6 @@ def generate_audio():
         print(f"📥 Generiere Audio für ID: {artwork_id}")
         tts.tts_to_file(text=text, file_path=file_path)
 
-        # Rückgabe vollständiger URL
         base_ip = os.getenv("EXPO_PUBLIC_LOCAL_BASE_IP", "localhost")
         return jsonify({"audio_url": f"http://{base_ip}:8000/audio/{filename}"})
 
