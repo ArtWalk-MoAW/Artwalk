@@ -41,7 +41,6 @@ export default function MapScreen() {
       try {
         const parsed = JSON.parse(artwork);
 
-        // ✅ Wenn Koordinaten vorhanden sind, dorthin zoomen
         if (parsed.latitude && parsed.longitude) {
           mapRef.current?.animateToRegion(
             {

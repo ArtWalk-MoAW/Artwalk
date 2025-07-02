@@ -78,7 +78,6 @@ def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferr
     else:
         reachable = district_reachable
 
-    # Duplikate entfernen
     unique_coords = set()
     filtered = []
     for art in reachable:
@@ -92,7 +91,7 @@ def plan_route(selected_district: str, max_minutes: int, num_stops: int, preferr
         print("Nicht genug passende Werke gefunden.")
         return []
 
-    #Bezirkspriorisierung
+    
     best_combo = None
     best_score = -1
     print(f"🔄 Suche beste Kombination aus {len(filtered)} Werken")

@@ -16,7 +16,7 @@ export default function SaveArtwork({ title, location, description, img, type }:
     isSaved,
     handleSave,
     handleDelete,
-  } = useSavedArtwork(title, location, description, img, type); // ⬅️ type weitergeben
+  } = useSavedArtwork(title, location, description, img, type); 
 
 
   const handlePress = async () => {

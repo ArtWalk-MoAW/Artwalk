@@ -30,13 +30,11 @@ export default function DetailAnaysisView({
 
   const handleSave = async () => {
     try {
-      const saveData = {
+      const payload = {
         ...analysisResult,
-        img: capturedImage, // <--- wichtig!
-        type: "scanned", // falls du das unterscheiden willst
+        captured_image: capturedImage, // ✅ Bild mit abspeichern
       };
-
-      const result = await saveArtworkAnalyse(saveData);
+      const result = await saveArtworkAnalyse(payload);
       setIsSaved(true);
       console.log("Gespeichert mit ID:", result.id);
       Alert.alert("Saved!", `ID: ${result.id}`);
@@ -60,14 +58,11 @@ export default function DetailAnaysisView({
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        {/* Back */}
         <TouchableOpacity onPress={onBack} style={styles.iconButton}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
-        {/* Play */}
         <TouchableOpacity
           onPress={handleAudioNavigation}
           style={[styles.iconButton, styles.centerIconButton]}
@@ -75,7 +70,6 @@ export default function DetailAnaysisView({
           <Ionicons name="play" size={24} color="black" />
         </TouchableOpacity>
 
-        {/* Save */}
         <TouchableOpacity style={styles.iconButton} onPress={handleSave}>
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
@@ -85,19 +79,16 @@ export default function DetailAnaysisView({
         </TouchableOpacity>
       </View>
 
-      {/* Image */}
       {capturedImage && (
         <Image source={{ uri: capturedImage }} style={styles.imagePreview} />
       )}
 
       <ScrollView>
-        {/* Title */}
         <Text style={styles.title}>
           {analysisResult?.artwork_analysis?.title || "No Artwork information."}
         </Text>
         <View style={styles.divider} />
 
-        {/* Artwork Details */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Artwork Details</Text>
           <View style={styles.infoBlock}>
@@ -107,6 +98,7 @@ export default function DetailAnaysisView({
                 "No Description available."}
             </Text>
           </View>
+          
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Interpretation</Text>
             <Text style={styles.infotext}>
@@ -118,7 +110,6 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Artist */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
             About{" "}
@@ -144,7 +135,6 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Historical Context */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Historical Context</Text>
           <View style={styles.infoBlock}>
@@ -165,7 +155,6 @@ export default function DetailAnaysisView({
 
         <View style={styles.divider} />
 
-        {/* Similar Artworks */}
         <View style={[styles.sectionContainer, styles.sectionBox]}>
           <Text style={styles.sectionTitle}>Similar Artworks</Text>
           {Array.isArray(analysisResult?.similar_artworks) ? (

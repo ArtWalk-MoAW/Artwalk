@@ -26,7 +26,7 @@ type Props = {
   onOpenAnalysis?: () => void;
 };
 
-// 🔧 Entfernt einfache HTML-Tags aus Text
+
 const stripHtmlTags = (text: string) => {
   return text.replace(/<[^>]*>/g, "").trim();
 };
@@ -51,7 +51,7 @@ export default function SavedArtworkItem({
       onOpenAnalysis();
     } else {
       router.push({
-        pathname: "/", // ggf. deine Map-Ansicht anpassen
+        pathname: "/",
         params: {
           artwork: JSON.stringify({
             title,

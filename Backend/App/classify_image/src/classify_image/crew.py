@@ -30,7 +30,7 @@ class ClassifyImage():
     @agent
     def visual_analyzer(self) -> Agent:
         return Agent(
-            config=self.agents_config['visual_analyzer'], # type: ignore[index]
+            config=self.agents_config['visual_analyzer'],
             verbose=True,
             #tools=[LLavaTool()],
             llm=llm
@@ -39,25 +39,23 @@ class ClassifyImage():
     @agent
     def refiner_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['refiner_agent'], # type: ignore[index]
+            config=self.agents_config['refiner_agent'], 
             verbose=True,
             #tools=[LLavaTool()],
             llm=llm,
-            #output_file='../report.md' # Specify the output file for the agent's results
         )
 
 
-    #Analyzes the image and trys to give back the artist and the title of the artwork
     @task
     def analyze_task(self) -> Task:
         return Task(
-            config=self.tasks_config['analyze_image'], # type: ignore[index]
+            config=self.tasks_config['analyze_image'], 
         )
 
     @task
     def refine_description(self) -> Task:
         return Task(
-            config=self.tasks_config['refine_description'], # type: ignore[index]
+            config=self.tasks_config['refine_description'], 
             output_file='refined_output.json'
         )
 
@@ -67,8 +65,8 @@ class ClassifyImage():
        
 
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents, 
+            tasks=self.tasks, 
             process=Process.sequential,
             verbose=True,
         )
