@@ -6,7 +6,7 @@ import {
   getSavedArtworks,
   getScannedArtworks,
 } from "@/services/artworkService";
-import DetailAnalysisView from "./DetailAnalysisView";
+import DetailAnalysisView from "./DetailAnaysisView";
 
 type Artwork = {
   id: string;

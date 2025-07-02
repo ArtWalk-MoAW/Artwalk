@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
-import DetailAnalysisView from "@/components/DetailAnalysisView";
+import DetailAnalysisView from "@/components/DetailAnaysisView";
 
 import * as FileSystem from "expo-file-system";
 
