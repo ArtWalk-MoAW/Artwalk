@@ -8,7 +8,7 @@
 
 ### 🎯 Image Recognition & Artwork Identification
 - Users can take or upload a photo of an artwork
-Note: Unfortunatley ollama only recognizes very popular artworks Like "Mona Lisa" or "Starry Night"
+*Note: Unfortunatley ollama only recognizes very popular artworks Like "Mona Lisa" or "Starry Night"*
 - The app uses AI (LLava + CrewAI agents) to analyze and recognize the artwork
 - Creates a JSOn File with the Artwork Title, Artist Name and a short description
 
@@ -21,6 +21,7 @@ Note: Unfortunatley ollama only recognizes very popular artworks Like "Mona Lisa
 
 ### 🗺️ Art Route Planning
 - Integrated map shows artworks across the city
+*Note: due to the scope of the project, we have decided to only show Munich's artworks on the map*
 - Users can plan personalized routes based on interest, distance, or art style
 - Suggested thematic routes based on the users preferences
 
@@ -51,6 +52,7 @@ https://streetartcities.com/open-data
 ---
 
 **Know Problems**
+
 Unfortunately there are some problems you might encounter while using our app.
 
 *Story Audio:*
@@ -59,6 +61,11 @@ What to do:
 - Go back to the Detail Page via the arrow on the left side
 - Press the Play Button again
 - If you still cant hear anything, turn on your notification sounds
+
+*Map/ Homescreen:*
+- Pressing on a Location Needle sometimes needs two tries before it will show you the Description Page
+
+
 
 ---
 
