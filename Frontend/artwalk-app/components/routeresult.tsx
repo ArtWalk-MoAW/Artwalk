@@ -1,6 +1,15 @@
-import React from "react";
-import { ScrollView, Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import MapView from "react-native-maps";
+import React, { useEffect, useState } from "react";
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouteForm } from "../hooks/useRouteForm";
 
 export default function RouteResult({
   route,
@@ -9,136 +18,257 @@ export default function RouteResult({
   route: any[];
   onReset: () => void;
 }) {
-  const hasStops = route && route.length > 0;
+  const [backPressed, setBackPressed] = useState(false);
+  const [savePressed, setSavePressed] = useState(false);
+
+  const { formData } = useRouteForm();
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.warn("⚠️ Location permission not granted");
+      }
+    })();
+  }, []);
+
+  const initialRegion = {
+    latitude: route[0]?.latitude || 48.137,
+    longitude: route[0]?.longitude || 11.575,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Deine Route</Text>
-
-      {hasStops ? (
-        route.map((stop, i) => (
-          <View key={i} style={{ marginBottom: 16 }}>
-            <Text>📍 {stop.address}</Text>
-            <Text>Künstler: {stop.artist || "Unbekannt"}</Text>
-          </View>
-        ))
-      ) : (
-        <View style={styles.messageBox}>
-          <Text style={styles.messageText}>
-            Leider konnte mit den gewählten Angaben keine passende Route berechnet werden.
-          </Text>
-          <Text style={styles.messageSub}>
-            Bitte versuche es mit einer anderen Kombination aus Bezirk, Stil oder Dauer.
-          </Text>
-        </View>
-      )}
-
-      <TouchableOpacity onPress={onReset} style={styles.button}>
-        <Text style={styles.buttonText}>Neue Route planen</Text>
+    <View style={{ flex: 1, backgroundColor: "#FFFEFC" }}>
+      {/* 🔙 Zurück-Button oben links */}
+      <TouchableOpacity
+        onPress={onReset}
+        onPressIn={() => setBackPressed(true)}
+        onPressOut={() => setBackPressed(false)}
+        style={[
+          styles.iconButton,
+          {
+            left: 10,
+            backgroundColor: backPressed ? "#F95636" : "#fff",
+          },
+        ]}
+        activeOpacity={1}
+      >
+        <Text
+          style={[
+            styles.iconText,
+            { color: backPressed ? "#fff" : "#1D0C02" },
+          ]}
+        >
+          ←
+        </Text>
       </TouchableOpacity>
-    </ScrollView>
+
+      {/* 🔖 Bookmark-Button oben rechts */}
+      <TouchableOpacity
+        onPress={() => {}}
+        onPressIn={() => setSavePressed(true)}
+        onPressOut={() => setSavePressed(false)}
+        style={[
+          styles.iconButton,
+          {
+            right: 20,
+            backgroundColor: savePressed ? "#F95636" : "#fff",
+          },
+        ]}
+        activeOpacity={1}
+      >
+        <Ionicons
+          name="bookmark-outline"
+          size={24}
+          color={savePressed ? "#fff" : "#1D0C02"}
+        />
+      </TouchableOpacity>
+
+      <MapView
+        style={styles.map}
+        initialRegion={initialRegion}
+        showsUserLocation
+        showsMyLocationButton
+        showsCompass={false}
+      >
+        {route.map((stop, i) => (
+          <Marker
+            key={i}
+            coordinate={{
+              latitude: stop.latitude,
+              longitude: stop.longitude,
+            }}
+            title={stop.artist || "Unbekannt"}
+            description={stop.address}
+          />
+        ))}
+      </MapView>
+
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.heading}>{formData.name || "Name of Route"}</Text>
+
+        <View style={styles.metaContainer}>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Duration</Text>
+            <Text style={styles.metaValue}>{formData.max_minutes} min</Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Location</Text>
+            <Text style={styles.metaValue}>{formData.district}</Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Genre</Text>
+            <Text
+              style={styles.metaValue}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {formData.styles?.join(", ") || "-"}
+            </Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Stops</Text>
+            <Text style={styles.metaValue}>{route.length}</Text>
+          </View>
+        </View>
+
+        {route.map((stop, i) => (
+          <View key={i} style={styles.stopItem}>
+            <View style={styles.lineIndicator}>
+              <View style={styles.dot} />
+              {i < route.length - 1 && <View style={styles.verticalLine} />}
+            </View>
+            <View style={styles.stopCard}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.stopArtist}>{stop.artist || "Unbekannt"}</Text>
+                <Text style={styles.stopName}>{stop.address}</Text>
+              </View>
+              <TouchableOpacity style={styles.arrowButton}>
+                <Text style={styles.arrow}>→</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
-
 const styles = StyleSheet.create({
+  map: {
+    width: "100%",
+    height: 250,
+  },
   container: {
     padding: 20,
     backgroundColor: "#FFFEFC",
-    flexGrow: 1,
+    paddingBottom: 80,
   },
   heading: {
-    fontSize: 24,
+    fontSize: 28,
     fontFamily: "InstrumentSerif-Regular",
     color: "#1D0C02",
     marginBottom: 20,
   },
-  italic: {
-    fontStyle: "italic",
+  metaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
   },
-  label: {
+  metaItem: {
+    flex: 1,
+    alignItems: "center",
+  },
+  metaLabel: {
+    fontFamily: "InstrumentSans-Regular",
+    color: "#999",
+    fontSize: 14,
+  },
+  metaValue: {
+    fontFamily: "InstrumentSans-Regular",
+    color: "#1D0C02",
+    fontSize: 16,
+  },
+  stopItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 30,
+  },
+  lineIndicator: {
+    width: 20,
+    alignItems: "center",
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#F95636",
+    marginTop: 5,
+    zIndex: 1,
+  },
+  verticalLine: {
+    position: "absolute",
+    top: 10,
+    width: 2,
+    height: "100%",
+    backgroundColor: "#ccc",
+  },
+  stopCard: {
+    flex: 1,
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: "#1D0C02",
+    borderRadius: 12,
+    padding: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  stopArtist: {
     fontFamily: "InstrumentSerif-Regular",
+    color: "#1D0C02",
     fontSize: 16,
     marginBottom: 6,
-    color: "#1D0C02",
   },
-    messageBox: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "#f9e6e6",
-    borderRadius: 8,
-    borderColor: "#ffb3b3",
-    borderWidth: 1,
-  },
-  messageText: {
-    fontSize: 16,
+  stopName: {
     fontFamily: "InstrumentSans-Regular",
-    color: "#990000",
-    marginBottom: 8,
-  },
-  messageSub: {
+    color: "#1D0C02",
     fontSize: 14,
-    fontFamily: "InstrumentSans-Regular",
-    color: "#990000",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    color: "#1D0C02",
-    backgroundColor: "#fff",
-    fontFamily: "InstrumentSans-Regular",
-  },
-  button: {
-    backgroundColor: "#000",
-    paddingVertical: 14,
-    borderRadius: 8,
+  arrowButton: {
+    width: 30,
+    height: 30,
+    backgroundColor: "#F95636",
+    borderRadius: 15,
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
+    marginLeft: 10,
   },
-  buttonText: {
+  arrow: {
     color: "#fff",
-    fontWeight: "600",
-    fontFamily: "InstrumentSans-Regular",
+    fontSize: 16,
+    fontWeight: "bold",
   },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  item: {
-    width: "48%",
-    aspectRatio: 1,
-    marginBottom: 16,
-    borderRadius: 12,
-    overflow: "hidden",
-    position: "relative",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  overlay: {
+  iconButton: {
     position: "absolute",
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    width: "100%",
-    padding: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  plus: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  center: {
-    flex: 1,
+    top: 10,
+    zIndex: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 40,
     justifyContent: "center",
     alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  iconText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1D0C02",
   },
 });

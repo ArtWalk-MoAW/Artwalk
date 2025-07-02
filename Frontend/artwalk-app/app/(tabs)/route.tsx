@@ -11,7 +11,7 @@ export default function RouteScreen() {
   const handleSubmit = async (payload: any) => {
     setIsLoading(true);
     try {
-      const res = await fetch("http://10.181.82.220:8000/route", {
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_LOCAL_BASE_IP}:8000/route`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -19,6 +19,7 @@ export default function RouteScreen() {
 
       const data = await res.json();
       setRoute(data.route);
+      console.log(route)
     } catch (err) {
       alert("Fehler beim Abrufen der Route.");
     } finally {

@@ -8,6 +8,7 @@ import {
   Image,
   StyleSheet
 } from "react-native";
+import { useRouteForm } from "../hooks/useRouteForm";
 
 
 const CATEGORIES = [
@@ -31,6 +32,7 @@ export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => vo
   const [district, setDistrict] = useState("");
   const [minutes, setMinutes] = useState("");
   const [numStops, setNumStops] = useState("");
+  const { formData, setFormData } = useRouteForm();
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleStyle = (style: string) => {
@@ -45,6 +47,15 @@ export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => vo
       return;
     }
 
+    setFormData({
+      name,
+      district,
+      max_minutes: minutes,
+      num_stops: numStops,
+      styles: selected,
+    });
+
+
     onSubmit({
       name,
       district,
@@ -57,20 +68,20 @@ export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => vo
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>
-        Where does your <Text style={styles.italic}>art</Text> journey begin?
+        What does your <Text style={styles.italic}>art</Text> journey look like?
       </Text>
 
       <Text style={styles.label}>Route Name</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Your Name" />
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="e.g. Graffiti Munich" placeholderTextColor="#999"/>
 
       <Text style={styles.label}>Where are you starting from?</Text>
-      <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholder="e.g. Haidhausen" />
+      <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholder="e.g. Haidhausen" placeholderTextColor="#999" />
 
       <Text style={styles.label}>How long should the trip last?</Text>
-      <TextInput style={styles.input} value={minutes} onChangeText={setMinutes} keyboardType="numeric" placeholder="e.g. 120" />
+      <TextInput style={styles.input} value={minutes} onChangeText={setMinutes} keyboardType="numeric" placeholder="e.g. 120" placeholderTextColor="#999" />
 
       <Text style={styles.label}>How many stops?</Text>
-      <TextInput style={styles.input} value={numStops} onChangeText={setNumStops} keyboardType="numeric" placeholder="e.g. 3" />
+      <TextInput style={styles.input} value={numStops} onChangeText={setNumStops} keyboardType="numeric" placeholder="e.g. 3" placeholderTextColor="#999" />
 
       <Text style={[styles.label, { marginTop: 20 }]}>Pick your art styles:</Text>
 
@@ -79,7 +90,7 @@ export default function RouteForm({ onSubmit }: { onSubmit: (payload: any) => vo
           <TouchableOpacity key={style} style={styles.item} onPress={() => toggleStyle(style)}>
             <Image source={imageMap[style]} style={styles.image} />
             <View style={styles.overlay}>
-              <Text style={styles.label}>{style}</Text>
+              <Text style={[styles.label, { color: "#fff" }]}>{style}</Text>
               <Text style={styles.plus}>{selected.includes(style) ? "✓" : "+"}</Text>
             </View>
           </TouchableOpacity>
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
-    color: "#1D0C02",
+    color: "black",
     backgroundColor: "#fff",
     fontFamily: "InstrumentSans-Regular",
   },
