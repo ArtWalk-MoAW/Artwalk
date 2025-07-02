@@ -15,6 +15,7 @@ from storyaudio.src.storyaudio.main import run_story_audio
 from classify_image.src.classify_image.main import run_crew_on_image
 from detail_agent.src.detail_agent.main import run_detail_page
 from App.route_planner.src.route_planner.planner_crew import plan_route
+import uuid
 
 # 🔁 .env laden
 load_dotenv()
@@ -40,6 +41,12 @@ class RouteRequest(BaseModel):
     max_minutes: int
     num_stops: int
     styles: list[str]
+
+class ArtworkRequest(BaseModel):
+    title:str
+    location: str
+    description: str
+    img:str
 
 class Exhibition(BaseModel):
     id: str
@@ -224,3 +231,108 @@ def get_exhibitions():
 
 # 🎧 MP3-Dateien ausliefern
 app.mount("/audio", StaticFiles(directory="/app/shared-data/audio"), name="audio")
+#@app.get("/get-Artreport")
+#def get_details_art():
+#    path = Path("/app/final_art_report.json")
+#    
+#    if not path.exists():
+#        return JSONResponse(content={"error": "File not found"}, status_code=404)
+#    
+#    try:
+#        with path.open("r", encoding="utf-8") as f:
+#            data = json.load(f)
+#        return JSONResponse(content=data, status_code=200)
+#    except json.JSONDecodeError:
+#        return JSONResponse(content={"error": "Invalid JSON format in file"}, status_code=500)
+#    except Exception as e:
+#        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+
+DATA_FILE = "/app/data/savedArtwork.json"
+
+
+@app.post("/save-artwork")
+async def save_artwork(request:ArtworkRequest):
+    new_data = request.model_dump()
+    print(new_data)
+    new_data["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_data)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f)
+    
+    return {"status": "success", "id": new_data["id"]}
+
+@app.get("/myartworks")
+def get_myartworks():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+@app.delete("/delete/{trip_id}")
+def delete_myart(trip_id: str):
+    if not os.path.exists(DATA_FILE):
+        return {"error": "No data found"}
+    
+    with open(DATA_FILE,"r") as f:
+        data= json.load(f)
+    
+    data = [trip for trip in data  if trip["id"] != trip_id]
+
+    with open(DATA_FILE,"w") as f:
+        json.dump(data, f)
+    
+    return {"status": "deleted"}
+
+ANALYSE_FILE = "/app/data/savedAnalyseArtwork.json"
+
+@app.delete("/delete-analysis/{analyse_id}")
+def delete_myart_analysis(analyse_id: str):
+    if not os.path.exists(ANALYSE_FILE):
+        return {"error": "No data found"}
+
+    with open(ANALYSE_FILE, "r") as f:
+        data = json.load(f)
+
+    data = [item for item in data if item["id"] != analyse_id]
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+    return {"status": "deleted"}
+
+
+@app.post("/save-artworkAnalyse")
+async def save_artworkAnalyse(request: Request):
+    new_analyse = await request.json()
+    print(new_analyse)
+    new_analyse["id"] = str(uuid.uuid4())
+
+    data = []
+
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE,"r") as f:
+            data= json.load(f)
+    
+    data.append(new_analyse)
+
+    with open(ANALYSE_FILE, "w") as f:
+        json.dump(data,f)
+
+    return {"status": "success", "id": new_analyse["id"]}
+
+@app.get("/myartworksanalyse")
+def get_myartworksanalyse():
+    if os.path.exists(ANALYSE_FILE):
+        with open(ANALYSE_FILE, "r") as f:
+            return json.load(f)
+    return []
+

@@ -33,7 +33,7 @@ export default function MapScreen() {
   }
 }, [loading, data]);
 
-  const cleanHtml = (html: string) =>
+  const cleanHtml: (html: string) => string = (html: string) =>
     html.replace(/<[^>]*>/g, '').trim();
 
   return (

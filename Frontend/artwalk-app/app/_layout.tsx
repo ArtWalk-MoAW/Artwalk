@@ -5,6 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 
 SplashScreen.preventAutoHideAsync();
 
