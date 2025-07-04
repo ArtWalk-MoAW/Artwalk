@@ -56,15 +56,30 @@ https://streetartcities.com/open-data
 
 Unfortunately there are some problems you might encounter while using our app.
 
-*Story Audio:*
-- After pressing on the Play Button in the Middle of the Detail Page after a scan, the audio is loaded and you are automatically switched to the player view. However you wont be able to play the audio in this stage.
-What to do:
-- Go back to the Detail Page via the arrow on the left side
-- Press the Play Button again
-- If you still cant hear anything, turn on your notification sounds
+- **Map view reacts delayed**: The first time a marker is tapped on the map, the corresponding
+overview might not open directly. The detailed view is then loaded correctly on the second attempt
+--> This behavior is probably related to the rendering behavior of the map component
+  
+- **Detail-Crew occasionally generates incorrect JSON data**: The communication between the CrewAI agent for the detail view and the backend is based on
+JSON objects. In some cases, the agent generates invalid JSON
+- e.g. with syntax errors or missing characters - which means that no content is displayed and an error message will occur
 
-*Map/ Homescreen:*
-- Pressing on a Location Needle sometimes needs two tries before it will show you the Description Page
+- **Audio playback only works the second time**: The first time you press
+the audio button, often nothing happens. Only after leaving the detailed view and opening
+again does playback work.
+The TTS file is probably not created or integrated correctly when loading for the first time.
+
+- **Limited image recognition for free art**: LLaVA via Ollama currently only recognizes
+very well-known works such as:
+
+  - Starry Night by Vincent van Gogh
+  - Mona Lisa by Leonardo da Vinci
+  - The Great Wave off Kanagawa by Katsushika Hokusai
+ 
+Other or more local works are usually not recognized or incorrectly assigned. The
+automatic image analysis is therefore severely restricted, especially in the case of unknown street art
+
+- **Route planning does not recognize district or style correctly**: When creating a route, it can happen that the current district is not recognized correctly
 
 
 
@@ -83,7 +98,7 @@ ipconfig getifaddr en0
 
 npx expo start
 # Expo Go app Installieren
-# Scan QR code with the Kamera of your phone
+# Scan QR code with the Camera of your phone
 
 # Build backend
 cd Backend
